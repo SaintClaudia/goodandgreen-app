@@ -255,7 +255,12 @@ export function PlanningTable({
                         }`}
                       >
                         {isAssigned && (
-                          <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                          <div
+                            className={`flex items-center justify-center gap-1.5 ${
+                              bill.status === 'cleared' ? 'opacity-60' : ''
+                            }`}
+                          >
+                            <StatusChip status={bill.status} />
                             <button
                               type="button"
                               onClick={(e) => {
@@ -268,9 +273,6 @@ export function PlanningTable({
                             >
                               {formatCurrency(bill.amount)}
                             </button>
-                            <div>
-                              <StatusChip status={bill.status} />
-                            </div>
                           </div>
                         )}
                       </div>
