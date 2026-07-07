@@ -16,4 +16,5 @@ export interface Bill {
   notes: string
   assignedPaycheckId: string | null
   status: PaymentStatus
+  remainingBalance: number | null // e.g. payoff balance on a loan or credit card
 }

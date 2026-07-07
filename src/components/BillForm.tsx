@@ -4,7 +4,13 @@ import { Modal } from './Modal'
 
 export type BillDraft = Pick<
   Bill,
-  'name' | 'amount' | 'dueDate' | 'autoWithdrawal' | 'recurringMonthly' | 'notes'
+  | 'name'
+  | 'amount'
+  | 'dueDate'
+  | 'autoWithdrawal'
+  | 'recurringMonthly'
+  | 'notes'
+  | 'remainingBalance'
 >
 
 interface BillFormProps {
@@ -21,6 +27,10 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
   const [autoWithdrawal, setAutoWithdrawal] = useState(initial?.autoWithdrawal ?? false)
   const [recurringMonthly, setRecurringMonthly] = useState(initial?.recurringMonthly ?? true)
   const [notes, setNotes] = useState(initial?.notes ?? '')
+  const [hasBalance, setHasBalance] = useState(initial?.remainingBalance != null)
+  const [remainingBalance, setRemainingBalance] = useState(
+    initial?.remainingBalance != null ? String(initial.remainingBalance) : '',
+  )
   const [error, setError] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
@@ -38,6 +48,11 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
       setError('Please enter a valid amount.')
       return
     }
+    const numericBalance = Number(remainingBalance)
+    if (hasBalance && (!remainingBalance || Number.isNaN(numericBalance) || numericBalance < 0)) {
+      setError('Please enter a valid remaining balance.')
+      return
+    }
     onSave({
       name: name.trim(),
       amount: numericAmount,
@@ -45,6 +60,7 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
       autoWithdrawal,
       recurringMonthly,
       notes: notes.trim(),
+      remainingBalance: hasBalance ? numericBalance : null,
     })
     onClose()
   }
@@ -104,6 +120,28 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
             />
             Recurring monthly
           </label>
+        </div>
+        <div>
+          <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <input
+              type="checkbox"
+              checked={hasBalance}
+              onChange={(e) => setHasBalance(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-900"
+            />
+            Track remaining balance (loan, credit card, etc.)
+          </label>
+          {hasBalance && (
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={remainingBalance}
+              onChange={(e) => setRemainingBalance(e.target.value)}
+              placeholder="Total balance still owed"
+              className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+            />
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Notes</label>

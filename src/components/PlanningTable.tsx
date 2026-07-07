@@ -117,6 +117,14 @@ export function PlanningTable({
                         ⚠ Due before this paycheck arrives
                       </p>
                     )}
+                    {bill.remainingBalance != null && (
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Balance owed:{' '}
+                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                          {formatCurrency(bill.remainingBalance)}
+                        </span>
+                      </p>
+                    )}
                     {bill.notes && (
                       <p className="mt-1 truncate text-xs italic text-slate-400 dark:text-slate-500" title={bill.notes}>
                         {bill.notes}
