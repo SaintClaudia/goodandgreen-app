@@ -21,9 +21,16 @@ export interface Bill {
   autoWithdrawal: boolean
   recurringMonthly: boolean
   notes: string
-  assignedFundId: string | null
-  status: PaymentStatus
   remainingBalance: number | null // e.g. payoff balance on a loan or credit card
-  plannedPaymentDate: string | null // ISO date string - when you actually intend to pay it
+}
+
+/** One placement of a bill onto a fund - its own status/notes/tags, independent of any other fund the same bill is placed on. */
+export interface Assignment {
+  id: string
+  billId: string
+  fundId: string
+  status: PaymentStatus
+  notes: string
   customChips: string[] // freeform tags (e.g. "Disputed"), independent of status
+  plannedPaymentDate: string | null // ISO date string - when you actually intend to pay this occurrence
 }

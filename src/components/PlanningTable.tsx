@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Bill, Expense, Fund } from '../types'
+import type { Assignment, Bill, Expense, Fund } from '../types'
 import { formatCurrency, formatDate, formatDateCompact, summarizeFund } from '../utils'
 import { useLocalStorage } from '../useLocalStorage'
 import { StatusChip } from './StatusBadge'
@@ -12,10 +12,12 @@ const MAX_BILLS_COLUMN_WIDTH = 560
 interface PlanningTableProps {
   bills: Bill[]
   funds: Fund[]
+  assignments: Assignment[]
   expenses: Expense[]
-  onAssignBill: (billId: string, fundId: string | null) => void
+  onAssignBill: (billId: string, fundId: string) => void
+  onUnassignBill: (billId: string, fundId: string) => void
   onEditBill: (bill: Bill) => void
-  onOpenBillStatus: (bill: Bill) => void
+  onOpenBillStatus: (bill: Bill, assignment: Assignment) => void
   onEditFund: (fund: Fund) => void
   onAddFund: () => void
   onAddBill: () => void
@@ -24,11 +26,17 @@ interface PlanningTableProps {
   onDeleteExpense: (expenseId: string) => void
 }
 
+function assignmentKey(billId: string, fundId: string) {
+  return `${billId}:${fundId}`
+}
+
 export function PlanningTable({
   bills,
   funds,
+  assignments,
   expenses,
   onAssignBill,
+  onUnassignBill,
   onEditBill,
   onOpenBillStatus,
   onEditFund,
@@ -39,6 +47,7 @@ export function PlanningTable({
   onDeleteExpense,
 }: PlanningTableProps) {
   const sortedFunds = [...funds].sort((a, b) => a.date.localeCompare(b.date))
+  const assignmentsByKey = new Map(assignments.map((a) => [assignmentKey(a.billId, a.fundId), a]))
   const [dragOverId, setDragOverId] = useState<string | null>(null)
   const [justAssigned, setJustAssigned] = useState<Set<string>>(new Set())
   const flashTimeouts = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
@@ -196,8 +205,8 @@ export function PlanningTable({
                   if (draggedId) onReorderBills(draggedId, bill.id)
                 }}
                 className={`border-b border-[var(--border)] last:border-b-0 ${
-                  bill.status === 'cleared' ? 'bg-[var(--panel-alt)]/40' : ''
-                } ${dragOverId === bill.id ? 'border-t-2 border-t-[var(--accent)]' : ''}`}
+                  dragOverId === bill.id ? 'border-t-2 border-t-[var(--accent)]' : ''
+                }`}
               >
                 <td className="sticky left-0 z-10 w-[var(--bills-col-width)] min-w-[180px] max-w-[560px] overflow-hidden border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
                   <div className="flex h-full items-center gap-2">
@@ -223,7 +232,7 @@ export function PlanningTable({
                     >
                       ⠿
                     </button>
-                    <div className={`@container min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                    <div className="@container min-w-0 flex-1 self-start">
                       <div className="flex flex-col items-start gap-0.5 @[220px]:flex-row @[220px]:items-baseline @[220px]:justify-between @[220px]:gap-2">
                         <button
                           type="button"
@@ -247,12 +256,7 @@ export function PlanningTable({
                             </span>
                           </span>
                         )}
-                        <span className="flex-shrink-0 text-xs text-[var(--muted)]">
-                          Due {formatDate(bill.dueDate)}
-                          {bill.plannedPaymentDate && (
-                            <span className="text-[var(--muted)]"> · pay {formatDateCompact(bill.plannedPaymentDate)}</span>
-                          )}
-                        </span>
+                        <span className="flex-shrink-0 text-xs text-[var(--muted)]">Due {formatDate(bill.dueDate)}</span>
                       </div>
                       {bill.notes && (
                         <p className="mt-1 truncate text-xs italic text-[var(--muted)]" title={bill.notes}>
@@ -263,14 +267,18 @@ export function PlanningTable({
                   </div>
                 </td>
                 {sortedFunds.map((fund) => {
-                  const isAssigned = bill.assignedFundId === fund.id
-                  const flashKey = `${bill.id}:${fund.id}`
+                  const assignment = assignmentsByKey.get(assignmentKey(bill.id, fund.id))
+                  const isAssigned = !!assignment
+                  const flashKey = assignmentKey(bill.id, fund.id)
                   const isFlashing = justAssigned.has(flashKey)
 
                   function toggleAssignment() {
-                    const nextAssigned = !isAssigned
-                    onAssignBill(bill.id, nextAssigned ? fund.id : null)
-                    if (nextAssigned) flashAssigned(flashKey)
+                    if (isAssigned) {
+                      onUnassignBill(bill.id, fund.id)
+                    } else {
+                      onAssignBill(bill.id, fund.id)
+                      flashAssigned(flashKey)
+                    }
                   }
 
                   return (
@@ -295,27 +303,32 @@ export function PlanningTable({
                             : 'border-transparent bg-transparent hover:border-[var(--border)]'
                         }`}
                       >
-                        {isAssigned && (
+                        {assignment && (
                           <div
-                            className={`flex items-center justify-between gap-1.5 ${
-                              bill.status === 'cleared' ? 'opacity-60' : ''
-                            }`}
+                            className={`space-y-1 ${assignment.status === 'cleared' ? 'opacity-60' : ''}`}
                           >
-                            <span>
-                              <StatusChip status={bill.status} />
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                onOpenBillStatus(bill)
-                              }}
-                              className={`font-semibold hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
-                                isFlashing ? 'text-white' : 'text-[var(--text)] hover:text-[var(--accent)]'
-                              }`}
-                            >
-                              {formatCurrency(bill.amount)}
-                            </button>
+                            <div className="flex items-center justify-between gap-1.5">
+                              <span>
+                                <StatusChip status={assignment.status} />
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onOpenBillStatus(bill, assignment)
+                                }}
+                                className={`font-semibold hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
+                                  isFlashing ? 'text-white' : 'text-[var(--text)] hover:text-[var(--accent)]'
+                                }`}
+                              >
+                                {formatCurrency(bill.amount)}
+                              </button>
+                            </div>
+                            {assignment.plannedPaymentDate && (
+                              <div className="text-[10px] text-[var(--muted)]">
+                                pay {formatDateCompact(assignment.plannedPaymentDate)}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -334,7 +347,7 @@ export function PlanningTable({
                 Summary
               </td>
               {sortedFunds.map((fund) => {
-                const summary = summarizeFund(fund, bills, expenses)
+                const summary = summarizeFund(fund, bills, assignments, expenses)
                 const fundExpenses = expenses.filter((e) => e.fundId === fund.id)
                 return (
                   <td key={fund.id} className="px-3 py-3 align-top text-xs text-[var(--muted)]">

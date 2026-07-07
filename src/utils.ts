@@ -1,4 +1,4 @@
-import type { Bill, Expense, Fund } from './types'
+import type { Assignment, Bill, Expense, Fund } from './types'
 
 export function generateId(): string {
   return crypto.randomUUID()
@@ -57,15 +57,25 @@ export interface FundSummary {
   remainingCleared: number
 }
 
-export function summarizeFund(fund: Fund, bills: Bill[], expenses: Expense[]): FundSummary {
-  const assigned = bills.filter((b) => b.assignedFundId === fund.id)
-  const plannedTotal = assigned.reduce((sum, b) => sum + b.amount, 0)
+export function summarizeFund(
+  fund: Fund,
+  bills: Bill[],
+  assignments: Assignment[],
+  expenses: Expense[],
+): FundSummary {
+  const billsById = new Map(bills.map((b) => [b.id, b]))
+  const assigned = assignments
+    .filter((a) => a.fundId === fund.id)
+    .map((a) => ({ assignment: a, bill: billsById.get(a.billId) }))
+    .filter((entry): entry is { assignment: Assignment; bill: Bill } => entry.bill != null)
+
+  const plannedTotal = assigned.reduce((sum, { bill }) => sum + bill.amount, 0)
   const paidOrClearedTotal = assigned
-    .filter((b) => b.status === 'paid' || b.status === 'cleared')
-    .reduce((sum, b) => sum + b.amount, 0)
+    .filter(({ assignment }) => assignment.status === 'paid' || assignment.status === 'cleared')
+    .reduce((sum, { bill }) => sum + bill.amount, 0)
   const clearedTotal = assigned
-    .filter((b) => b.status === 'cleared')
-    .reduce((sum, b) => sum + b.amount, 0)
+    .filter(({ assignment }) => assignment.status === 'cleared')
+    .reduce((sum, { bill }) => sum + bill.amount, 0)
   const spendingTotal = expenses
     .filter((e) => e.fundId === fund.id)
     .reduce((sum, e) => sum + e.amount, 0)

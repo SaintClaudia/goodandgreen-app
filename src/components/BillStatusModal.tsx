@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Bill, PaymentStatus } from '../types'
+import type { Assignment, Bill, PaymentStatus } from '../types'
 import { Modal } from './Modal'
 import { StatusChips } from './StatusBadge'
 import { formatCurrency, formatDate } from '../utils'
@@ -8,26 +8,30 @@ export interface BillStatusUpdate {
   status: PaymentStatus
   customChips: string[]
   notes: string
+  plannedPaymentDate: string | null
 }
 
 interface BillStatusModalProps {
   bill: Bill
+  assignment: Assignment
   customChipOptions: string[]
   onCreateCustomChip: (label: string) => void
-  onSave: (billId: string, update: BillStatusUpdate) => void
+  onSave: (assignmentId: string, update: BillStatusUpdate) => void
   onClose: () => void
 }
 
 export function BillStatusModal({
   bill,
+  assignment,
   customChipOptions,
   onCreateCustomChip,
   onSave,
   onClose,
 }: BillStatusModalProps) {
-  const [status, setStatus] = useState(bill.status)
-  const [customChips, setCustomChips] = useState(bill.customChips ?? [])
-  const [notes, setNotes] = useState(bill.notes)
+  const [status, setStatus] = useState(assignment.status)
+  const [customChips, setCustomChips] = useState(assignment.customChips)
+  const [notes, setNotes] = useState(assignment.notes)
+  const [plannedPaymentDate, setPlannedPaymentDate] = useState(assignment.plannedPaymentDate ?? '')
   const [isAddingChip, setIsAddingChip] = useState(false)
   const [newChipText, setNewChipText] = useState('')
 
@@ -48,7 +52,12 @@ export function BillStatusModal({
   }
 
   function handleSave() {
-    onSave(bill.id, { status, customChips, notes: notes.trim() })
+    onSave(assignment.id, {
+      status,
+      customChips,
+      notes: notes.trim(),
+      plannedPaymentDate: plannedPaymentDate || null,
+    })
     onClose()
   }
 
@@ -121,6 +130,22 @@ export function BillStatusModal({
               </button>
             )}
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="assignment-planned-payment-date"
+            className="block text-[11px] uppercase tracking-wider text-[var(--muted)]"
+          >
+            Planned payment date (optional)
+          </label>
+          <input
+            id="assignment-planned-payment-date"
+            type="date"
+            value={plannedPaymentDate}
+            onChange={(e) => setPlannedPaymentDate(e.target.value)}
+            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          />
         </div>
 
         <div>
