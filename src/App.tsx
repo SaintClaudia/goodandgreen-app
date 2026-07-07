@@ -76,7 +76,7 @@ function App() {
       <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
         <header className="mb-4 flex items-center gap-2">
           <span className="h-2 w-2 flex-shrink-0 rounded-full bg-[#0bf81e]" />
-          <span className="text-[13px] text-[var(--text)]">paycheck planner</span>
+          <span className="text-[13px] text-[var(--text)]">sheets</span>
           <div className="ml-auto">
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
