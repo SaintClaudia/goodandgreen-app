@@ -33,7 +33,6 @@ export function ExpenseList({ fundId, expenses, onAdd, onDelete }: ExpenseListPr
 
   return (
     <div className="mt-2 text-right">
-      <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Spending</div>
       {expenses.length > 0 && (
         <ul className="mt-1 space-y-1">
           {expenses.map((expense) => (
@@ -53,7 +52,12 @@ export function ExpenseList({ fundId, expenses, onAdd, onDelete }: ExpenseListPr
         </ul>
       )}
       {isAdding ? (
-        <div className="mt-1 flex items-center justify-end gap-1">
+        <div
+          className="mt-1 flex items-center justify-end gap-1"
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) cancel()
+          }}
+        >
           <input
             autoFocus
             type="text"
