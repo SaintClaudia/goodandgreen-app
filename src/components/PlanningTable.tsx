@@ -116,7 +116,7 @@ export function PlanningTable({
                       }}
                       onDragEnd={() => setDragOverId(null)}
                       aria-label="Drag to reorder"
-                      className="mt-0.5 flex-shrink-0 cursor-grab select-none leading-none text-[var(--muted)] active:cursor-grabbing"
+                      className="mt-0.5 flex-shrink-0 cursor-pointer select-none leading-none text-[var(--muted)]"
                     >
                       ⠿
                     </span>
