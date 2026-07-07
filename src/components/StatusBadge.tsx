@@ -7,7 +7,7 @@ const STATUS_STYLES: Record<PaymentStatus, string> = {
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
-  planned: 'Planned',
+  planned: '–',
   paid: 'Paid',
   cleared: 'Cleared',
 }
