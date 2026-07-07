@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Bill, Paycheck, PaymentStatus } from '../types'
-import { formatCurrency, formatDate, summarizePaycheck } from '../utils'
-import { StatusSelect } from './StatusBadge'
+import type { Bill, Paycheck } from '../types'
+import { formatCurrency, formatDate, formatDateCompact, summarizePaycheck } from '../utils'
+import { StatusChip } from './StatusBadge'
 
 const ASSIGN_FLASH_MS = 1800
 
@@ -9,7 +9,6 @@ interface PlanningTableProps {
   bills: Bill[]
   paychecks: Paycheck[]
   onAssignBill: (billId: string, paycheckId: string | null) => void
-  onStatusChange: (billId: string, status: PaymentStatus) => void
   onEditBill: (bill: Bill) => void
   onEditPaycheck: (paycheck: Paycheck) => void
   onAddPaycheck: () => void
@@ -21,7 +20,6 @@ export function PlanningTable({
   bills,
   paychecks,
   onAssignBill,
-  onStatusChange,
   onEditBill,
   onEditPaycheck,
   onAddPaycheck,
@@ -184,7 +182,12 @@ export function PlanningTable({
                         {bill.name}
                       </button>
                       <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                        <span className="text-xs text-[var(--muted)]">Due {formatDate(bill.dueDate)}</span>
+                        <span className="text-xs text-[var(--muted)]">
+                          Due {formatDate(bill.dueDate)}
+                          {bill.plannedPaymentDate && (
+                            <span className="text-[var(--muted)]"> · pay {formatDateCompact(bill.plannedPaymentDate)}</span>
+                          )}
+                        </span>
                         {bill.autoWithdrawal && (
                           <span className="rounded-full border border-[var(--accent-dim)] px-1.5 py-0.5 text-[10px] text-[var(--accent)]">
                             Auto-pay
@@ -245,14 +248,16 @@ export function PlanningTable({
                       {isAssigned ? (
                         <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</span>
+                            <button
+                              type="button"
+                              onClick={() => onEditBill(bill)}
+                              className="font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                            >
+                              {formatCurrency(bill.amount)}
+                            </button>
                             {toggle}
                           </div>
-                          <StatusSelect
-                            status={bill.status}
-                            onChange={(status) => onStatusChange(bill.id, status)}
-                            label={`${bill.name} status for ${formatDate(paycheck.date)} paycheck`}
-                          />
+                          <StatusChip status={bill.status} />
                         </div>
                       ) : (
                         <div className="flex justify-end">{toggle}</div>

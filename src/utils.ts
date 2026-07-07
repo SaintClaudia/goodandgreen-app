@@ -22,6 +22,13 @@ export function formatDate(iso: string): string {
   })
 }
 
+/** Compact numeric date, e.g. "7.23" instead of "Jul 23". */
+export function formatDateCompact(iso: string): string {
+  if (!iso) return ''
+  const [, month, day] = iso.split('-').map(Number)
+  return `${month}.${day}`
+}
+
 export interface PaycheckSummary {
   paycheckAmount: number
   plannedTotal: number

@@ -17,4 +17,5 @@ export interface Bill {
   assignedPaycheckId: string | null
   status: PaymentStatus
   remainingBalance: number | null // e.g. payoff balance on a loan or credit card
+  plannedPaymentDate: string | null // ISO date string - when you actually intend to pay it
 }

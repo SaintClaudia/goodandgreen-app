@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Bill, Paycheck, PaymentStatus } from './types'
+import type { Bill, Paycheck } from './types'
 import { useLocalStorage } from './useLocalStorage'
 import { generateId } from './utils'
 import { PlanningTable } from './components/PlanningTable'
@@ -44,7 +44,6 @@ function App() {
         {
           id: generateId(),
           assignedPaycheckId: null,
-          status: 'planned',
           ...draft,
         },
       ])
@@ -62,10 +61,6 @@ function App() {
     setBills((prev) =>
       prev.map((b) => (b.id === billId ? { ...b, assignedPaycheckId: paycheckId } : b)),
     )
-  }
-
-  function handleStatusChange(billId: string, status: PaymentStatus) {
-    setBills((prev) => prev.map((b) => (b.id === billId ? { ...b, status } : b)))
   }
 
   function handleReorderBills(draggedId: string, targetId: string) {
@@ -94,7 +89,6 @@ function App() {
           bills={bills}
           paychecks={paychecks}
           onAssignBill={handleAssignBill}
-          onStatusChange={handleStatusChange}
           onEditBill={(bill) => setBillModal({ mode: 'edit', bill })}
           onEditPaycheck={(paycheck) => setPaycheckModal({ mode: 'edit', paycheck })}
           onAddPaycheck={() => setPaycheckModal({ mode: 'add' })}

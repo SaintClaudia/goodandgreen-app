@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Bill } from '../types'
 import { Modal } from './Modal'
+import { StatusChips } from './StatusBadge'
 
 export type BillDraft = Pick<
   Bill,
@@ -11,6 +12,8 @@ export type BillDraft = Pick<
   | 'recurringMonthly'
   | 'notes'
   | 'remainingBalance'
+  | 'status'
+  | 'plannedPaymentDate'
 >
 
 interface BillFormProps {
@@ -31,6 +34,8 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
   const [remainingBalance, setRemainingBalance] = useState(
     initial?.remainingBalance != null ? String(initial.remainingBalance) : '',
   )
+  const [status, setStatus] = useState(initial?.status ?? 'planned')
+  const [plannedPaymentDate, setPlannedPaymentDate] = useState(initial?.plannedPaymentDate ?? '')
   const [error, setError] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
@@ -61,6 +66,8 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
       recurringMonthly,
       notes: notes.trim(),
       remainingBalance: hasBalance ? numericBalance : null,
+      status,
+      plannedPaymentDate: plannedPaymentDate || null,
     })
     onClose()
   }
@@ -108,6 +115,24 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
               onChange={(e) => setDueDate(e.target.value)}
               className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
             />
+          </div>
+        </div>
+        <div>
+          <label htmlFor="bill-planned-payment-date" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+            Planned payment date (optional)
+          </label>
+          <input
+            id="bill-planned-payment-date"
+            type="date"
+            value={plannedPaymentDate}
+            onChange={(e) => setPlannedPaymentDate(e.target.value)}
+            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          />
+        </div>
+        <div>
+          <span className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Status</span>
+          <div className="mt-1">
+            <StatusChips status={status} onChange={setStatus} />
           </div>
         </div>
         <div className="flex gap-6">
