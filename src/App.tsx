@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Bill, Fund } from './types'
 import { useLocalStorage } from './useLocalStorage'
-import { generateId } from './utils'
+import { addMonthClamped, generateId, todayISO } from './utils'
 import { PlanningTable } from './components/PlanningTable'
 import { FundForm } from './components/FundForm'
 import { BillForm, type BillDraft } from './components/BillForm'
@@ -26,6 +26,26 @@ function App() {
       }),
     )
   }, [])
+
+  // Roll recurring-monthly bills' due dates forward once their due date has passed,
+  // resetting the cycle-specific assignment/status/planned-payment-date.
+  useEffect(() => {
+    const today = todayISO()
+    setBills((prev) =>
+      prev.map((b) => {
+        if (!b.recurringMonthly) return b
+        let dueDate = b.dueDate
+        let rolled = false
+        while (dueDate < today) {
+          dueDate = addMonthClamped(dueDate)
+          rolled = true
+        }
+        if (!rolled) return b
+        return { ...b, dueDate, assignedFundId: null, status: 'planned', plannedPaymentDate: null }
+      }),
+    )
+  }, [])
+
   const [customChipOptions, setCustomChipOptions] = useLocalStorage<string[]>('customChipOptions', [])
   const [fundModal, setFundModal] = useState<FundModalState>(null)
   const [billModal, setBillModal] = useState<BillModalState>(null)

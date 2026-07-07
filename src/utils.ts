@@ -29,6 +29,26 @@ export function formatDateCompact(iso: string): string {
   return `${month}.${day}`
 }
 
+export function todayISO(): string {
+  const now = new Date()
+  const yyyy = now.getFullYear()
+  const mm = String(now.getMonth() + 1).padStart(2, '0')
+  const dd = String(now.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
+/** Adds one month to an ISO date, clamping the day to the target month's length. */
+export function addMonthClamped(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number)
+  const firstOfNext = new Date(year, month, 1)
+  const daysInNext = new Date(firstOfNext.getFullYear(), firstOfNext.getMonth() + 1, 0).getDate()
+  firstOfNext.setDate(Math.min(day, daysInNext))
+  const yyyy = firstOfNext.getFullYear()
+  const mm = String(firstOfNext.getMonth() + 1).padStart(2, '0')
+  const dd = String(firstOfNext.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
+
 export interface FundSummary {
   fundAmount: number
   plannedTotal: number

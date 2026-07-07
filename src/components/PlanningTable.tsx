@@ -175,42 +175,41 @@ export function PlanningTable({
                       ⠿
                     </button>
                     <div className={`min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
-                      <button
-                        type="button"
-                        onClick={() => onEditBill(bill)}
-                        className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
-                      >
-                        {bill.name}
-                      </button>
-                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <button
+                          type="button"
+                          onClick={() => onEditBill(bill)}
+                          className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                        >
+                          {bill.name}
+                        </button>
+                        {bill.autoWithdrawal && (
+                          <span className="flex-shrink-0 rounded-full border border-[var(--accent-dim)] px-1.5 py-0.5 text-[10px] text-[var(--accent)]">
+                            Auto-pay
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 flex items-baseline justify-between gap-2">
                         <span className="text-xs text-[var(--muted)]">
+                          {bill.remainingBalance != null && (
+                            <>
+                              Balance owed:{' '}
+                              <span className="font-medium text-[var(--text)]">
+                                {formatCurrency(bill.remainingBalance)}
+                              </span>
+                            </>
+                          )}
+                        </span>
+                        <span className="flex-shrink-0 text-xs text-[var(--muted)]">
                           Due {formatDate(bill.dueDate)}
                           {bill.plannedPaymentDate && (
                             <span className="text-[var(--muted)]"> · pay {formatDateCompact(bill.plannedPaymentDate)}</span>
                           )}
                         </span>
-                        {bill.autoWithdrawal && (
-                          <span className="rounded-full border border-[var(--accent-dim)] px-1.5 py-0.5 text-[10px] text-[var(--accent)]">
-                            Auto-pay
-                          </span>
-                        )}
-                        {bill.recurringMonthly && (
-                          <span className="rounded-full border border-[var(--border)] px-1.5 py-0.5 text-[9.5px] text-[var(--muted)]">
-                            Monthly
-                          </span>
-                        )}
                       </div>
                       {dueBeforeFund && (
                         <p className="mt-1 text-[11px] font-medium text-[var(--danger)]">
                           ⚠ Due before these funds arrive
-                        </p>
-                      )}
-                      {bill.remainingBalance != null && (
-                        <p className="mt-1 text-xs text-[var(--muted)]">
-                          Balance owed:{' '}
-                          <span className="font-medium text-[var(--text)]">
-                            {formatCurrency(bill.remainingBalance)}
-                          </span>
                         </p>
                       )}
                       {bill.notes && (
@@ -256,11 +255,13 @@ export function PlanningTable({
                       >
                         {isAssigned && (
                           <div
-                            className={`flex items-center justify-center gap-1.5 ${
+                            className={`flex items-center justify-between gap-1.5 ${
                               bill.status === 'cleared' ? 'opacity-60' : ''
                             }`}
                           >
-                            <StatusChip status={bill.status} />
+                            <span>
+                              <StatusChip status={bill.status} />
+                            </span>
                             <button
                               type="button"
                               onClick={(e) => {
