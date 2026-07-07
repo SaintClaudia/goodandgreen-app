@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Bill, Fund } from '../types'
+import type { Bill, Expense, Fund } from '../types'
 import { formatCurrency, formatDate, formatDateCompact, summarizeFund } from '../utils'
 import { useLocalStorage } from '../useLocalStorage'
 import { StatusChip } from './StatusBadge'
+import { ExpenseList } from './ExpenseList'
 
 const ASSIGN_FLASH_MS = 1800
 const MIN_BILLS_COLUMN_WIDTH = 180
@@ -11,6 +12,7 @@ const MAX_BILLS_COLUMN_WIDTH = 560
 interface PlanningTableProps {
   bills: Bill[]
   funds: Fund[]
+  expenses: Expense[]
   onAssignBill: (billId: string, fundId: string | null) => void
   onEditBill: (bill: Bill) => void
   onOpenBillStatus: (bill: Bill) => void
@@ -18,11 +20,14 @@ interface PlanningTableProps {
   onAddFund: () => void
   onAddBill: () => void
   onReorderBills: (draggedId: string, targetId: string) => void
+  onAddExpense: (fundId: string, label: string, amount: number) => void
+  onDeleteExpense: (expenseId: string) => void
 }
 
 export function PlanningTable({
   bills,
   funds,
+  expenses,
   onAssignBill,
   onEditBill,
   onOpenBillStatus,
@@ -30,6 +35,8 @@ export function PlanningTable({
   onAddFund,
   onAddBill,
   onReorderBills,
+  onAddExpense,
+  onDeleteExpense,
 }: PlanningTableProps) {
   const sortedFunds = [...funds].sort((a, b) => a.date.localeCompare(b.date))
   const [dragOverId, setDragOverId] = useState<string | null>(null)
@@ -337,7 +344,8 @@ export function PlanningTable({
                 Summary
               </td>
               {sortedFunds.map((fund) => {
-                const summary = summarizeFund(fund, bills)
+                const summary = summarizeFund(fund, bills, expenses)
+                const fundExpenses = expenses.filter((e) => e.fundId === fund.id)
                 return (
                   <td key={fund.id} className="px-3 py-3 align-top text-xs text-[var(--muted)]">
                     <div>
@@ -350,6 +358,12 @@ export function PlanningTable({
                         {formatCurrency(summary.remainingPlanned)}
                       </div>
                     </div>
+                    <ExpenseList
+                      fundId={fund.id}
+                      expenses={fundExpenses}
+                      onAdd={onAddExpense}
+                      onDelete={onDeleteExpense}
+                    />
                     <details className="group mt-2">
                       <summary className="flex cursor-pointer list-none items-center gap-1 text-[11px] text-[var(--muted)] hover:text-[var(--accent)] [&::-webkit-details-marker]:hidden">
                         <svg
@@ -382,6 +396,12 @@ export function PlanningTable({
                           <dt>Paid / cleared</dt>
                           <dd className="font-medium text-[var(--accent)]">
                             {formatCurrency(summary.paidOrClearedTotal)}
+                          </dd>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <dt>Spending</dt>
+                          <dd className="font-medium text-[var(--text)]">
+                            −{formatCurrency(summary.spendingTotal)}
                           </dd>
                         </div>
                         <div className="flex justify-between gap-2 border-t border-[var(--border)] pt-1">

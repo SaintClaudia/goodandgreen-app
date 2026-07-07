@@ -6,6 +6,13 @@ export interface Fund {
   amount: number
 }
 
+export interface Expense {
+  id: string
+  fundId: string
+  label: string
+  amount: number
+}
+
 export interface Bill {
   id: string
   name: string

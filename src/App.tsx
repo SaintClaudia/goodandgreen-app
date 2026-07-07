@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Bill, Fund } from './types'
+import type { Bill, Expense, Fund } from './types'
 import { useLocalStorage } from './useLocalStorage'
 import { addMonthClamped, generateId, todayISO } from './utils'
 import { PlanningTable } from './components/PlanningTable'
@@ -47,6 +47,7 @@ function App() {
   }, [])
 
   const [customChipOptions, setCustomChipOptions] = useLocalStorage<string[]>('customChipOptions', [])
+  const [expenses, setExpenses] = useLocalStorage<Expense[]>('expenses', [])
   const [fundModal, setFundModal] = useState<FundModalState>(null)
   const [billModal, setBillModal] = useState<BillModalState>(null)
   const [statusModalBill, setStatusModalBill] = useState<Bill | null>(null)
@@ -65,6 +66,7 @@ function App() {
     const id = fundModal.fund.id
     setFunds((prev) => prev.filter((f) => f.id !== id))
     setBills((prev) => prev.map((b) => (b.assignedFundId === id ? { ...b, assignedFundId: null } : b)))
+    setExpenses((prev) => prev.filter((e) => e.fundId !== id))
     setFundModal(null)
   }
 
@@ -106,6 +108,14 @@ function App() {
     setBills((prev) => prev.map((b) => (b.id === billId ? { ...b, ...update } : b)))
   }
 
+  function handleAddExpense(fundId: string, label: string, amount: number) {
+    setExpenses((prev) => [...prev, { id: generateId(), fundId, label, amount }])
+  }
+
+  function handleDeleteExpense(expenseId: string) {
+    setExpenses((prev) => prev.filter((e) => e.id !== expenseId))
+  }
+
   function handleReorderBills(draggedId: string, targetId: string) {
     if (draggedId === targetId) return
     setBills((prev) => {
@@ -131,6 +141,7 @@ function App() {
         <PlanningTable
           bills={bills}
           funds={funds}
+          expenses={expenses}
           onAssignBill={handleAssignBill}
           onEditBill={(bill) => setBillModal({ mode: 'edit', bill })}
           onOpenBillStatus={(bill) => setStatusModalBill(bill)}
@@ -138,6 +149,8 @@ function App() {
           onAddFund={() => setFundModal({ mode: 'add' })}
           onAddBill={() => setBillModal({ mode: 'add' })}
           onReorderBills={handleReorderBills}
+          onAddExpense={handleAddExpense}
+          onDeleteExpense={handleDeleteExpense}
         />
       </div>
 

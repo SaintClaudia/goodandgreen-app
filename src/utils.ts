@@ -1,4 +1,4 @@
-import type { Bill, Fund } from './types'
+import type { Bill, Expense, Fund } from './types'
 
 export function generateId(): string {
   return crypto.randomUUID()
@@ -52,11 +52,12 @@ export interface FundSummary {
   fundAmount: number
   plannedTotal: number
   paidOrClearedTotal: number
+  spendingTotal: number
   remainingPlanned: number
   remainingCleared: number
 }
 
-export function summarizeFund(fund: Fund, bills: Bill[]): FundSummary {
+export function summarizeFund(fund: Fund, bills: Bill[], expenses: Expense[]): FundSummary {
   const assigned = bills.filter((b) => b.assignedFundId === fund.id)
   const plannedTotal = assigned.reduce((sum, b) => sum + b.amount, 0)
   const paidOrClearedTotal = assigned
@@ -65,12 +66,16 @@ export function summarizeFund(fund: Fund, bills: Bill[]): FundSummary {
   const clearedTotal = assigned
     .filter((b) => b.status === 'cleared')
     .reduce((sum, b) => sum + b.amount, 0)
+  const spendingTotal = expenses
+    .filter((e) => e.fundId === fund.id)
+    .reduce((sum, e) => sum + e.amount, 0)
 
   return {
     fundAmount: fund.amount,
     plannedTotal,
     paidOrClearedTotal,
-    remainingPlanned: fund.amount - plannedTotal,
-    remainingCleared: fund.amount - clearedTotal,
+    spendingTotal,
+    remainingPlanned: fund.amount - plannedTotal - spendingTotal,
+    remainingCleared: fund.amount - clearedTotal - spendingTotal,
   }
 }
