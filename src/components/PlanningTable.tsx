@@ -29,6 +29,12 @@ export function PlanningTable({
   const sortedPaychecks = [...paychecks].sort((a, b) => a.date.localeCompare(b.date))
   const [dragOverId, setDragOverId] = useState<string | null>(null)
 
+  function moveBill(index: number, direction: -1 | 1) {
+    const targetIndex = index + direction
+    if (targetIndex < 0 || targetIndex >= bills.length) return
+    onReorderBills(bills[index].id, bills[targetIndex].id)
+  }
+
   return (
     <div className="overflow-x-auto rounded-[6px] border border-[var(--border)] bg-[var(--panel)]">
       <table className="w-full min-w-max border-collapse text-[13px]">
@@ -42,7 +48,7 @@ export function PlanningTable({
                 <button
                   type="button"
                   onClick={() => onEditPaycheck(paycheck)}
-                  className="flex w-full flex-col rounded-[6px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-left transition-colors hover:border-[var(--accent)]"
+                  className="flex w-full flex-col rounded-[6px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-left transition-colors hover:border-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                 >
                   <span className="text-[10px] uppercase tracking-wider text-[var(--muted)]">
                     {formatDate(paycheck.date)}
@@ -57,7 +63,7 @@ export function PlanningTable({
               <button
                 type="button"
                 onClick={onAddPaycheck}
-                className="rounded-[5px] border border-dashed border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                className="rounded-[5px] border border-dashed border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               >
                 + add paycheck
               </button>
@@ -75,7 +81,7 @@ export function PlanningTable({
                 <button
                   type="button"
                   onClick={onAddBill}
-                  className="text-[var(--accent)] hover:underline"
+                  className="text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                 >
                   Add your first bill
                 </button>
@@ -83,7 +89,7 @@ export function PlanningTable({
               </td>
             </tr>
           )}
-          {bills.map((bill) => {
+          {bills.map((bill, index) => {
             const assignedPaycheck = sortedPaychecks.find((p) => p.id === bill.assignedPaycheckId)
             const dueBeforePaycheck =
               assignedPaycheck && bill.dueDate && bill.dueDate < assignedPaycheck.date
@@ -108,23 +114,33 @@ export function PlanningTable({
               >
                 <td className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
                   <div className="flex h-full items-center gap-2">
-                    <span
+                    <button
+                      type="button"
                       draggable
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', bill.id)
                         e.dataTransfer.effectAllowed = 'move'
                       }}
                       onDragEnd={() => setDragOverId(null)}
-                      aria-label="Drag to reorder"
-                      className="flex-shrink-0 cursor-pointer select-none leading-none text-[var(--muted)]"
+                      onKeyDown={(e) => {
+                        if (e.key === 'ArrowUp') {
+                          e.preventDefault()
+                          moveBill(index, -1)
+                        } else if (e.key === 'ArrowDown') {
+                          e.preventDefault()
+                          moveBill(index, 1)
+                        }
+                      }}
+                      aria-label={`Reorder ${bill.name}. Drag, or press arrow up or down, to move.`}
+                      className="flex-shrink-0 cursor-pointer select-none border-none bg-transparent p-0 leading-none text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                     >
                       ⠿
-                    </span>
+                    </button>
                     <div className={`min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
                       <button
                         type="button"
                         onClick={() => onEditBill(bill)}
-                        className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline"
+                        className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                       >
                         {bill.name}
                       </button>
@@ -170,7 +186,7 @@ export function PlanningTable({
                       onClick={() => onAssignBill(bill.id, isAssigned ? null : paycheck.id)}
                       aria-label={isAssigned ? 'Unassign from this paycheck' : 'Assign to this paycheck'}
                       aria-pressed={isAssigned}
-                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors ${
+                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                         isAssigned
                           ? 'border-[var(--accent)] bg-[var(--accent)]'
                           : 'border-dashed border-[var(--border)] bg-transparent hover:border-[var(--accent)]'
@@ -186,6 +202,7 @@ export function PlanningTable({
                             <StatusSelect
                               status={bill.status}
                               onChange={(status) => onStatusChange(bill.id, status)}
+                              label={`${bill.name} status for ${formatDate(paycheck.date)} paycheck`}
                             />
                           </div>
                           {toggle}

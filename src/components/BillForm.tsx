@@ -69,35 +69,44 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
     <Modal title={initial ? 'Edit bill' : 'Add bill'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Bill name</label>
+          <label htmlFor="bill-name" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+            Bill name
+          </label>
           <input
+            id="bill-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Rent, Netflix, Car insurance"
-            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Amount</label>
+            <label htmlFor="bill-amount" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+              Amount
+            </label>
             <input
+              id="bill-amount"
               type="number"
               step="0.01"
               min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
             />
           </div>
           <div>
-            <label className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Due date</label>
+            <label htmlFor="bill-due-date" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+              Due date
+            </label>
             <input
+              id="bill-due-date"
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none dark:[color-scheme:dark]"
+              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:[color-scheme:dark]"
             />
           </div>
         </div>
@@ -132,35 +141,48 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
             Track remaining balance (loan, credit card, etc.)
           </label>
           {hasBalance && (
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={remainingBalance}
-              onChange={(e) => setRemainingBalance(e.target.value)}
-              placeholder="Total balance still owed"
-              className="mt-2 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
-            />
+            <>
+              <label htmlFor="bill-balance" className="sr-only">
+                Remaining balance
+              </label>
+              <input
+                id="bill-balance"
+                type="number"
+                step="0.01"
+                min="0"
+                value={remainingBalance}
+                onChange={(e) => setRemainingBalance(e.target.value)}
+                placeholder="Total balance still owed"
+                className="mt-2 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              />
+            </>
           )}
         </div>
         <div>
-          <label className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Notes</label>
+          <label htmlFor="bill-notes" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+            Notes
+          </label>
           <textarea
+            id="bill-notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={2}
             placeholder="Optional"
-            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
+            className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
-        {error && <p className="text-sm text-[var(--danger)]">{error}</p>}
+        {error && (
+          <p role="alert" className="text-sm text-[var(--danger)]">
+            {error}
+          </p>
+        )}
         <div className="flex items-center justify-between pt-2">
           <div>
             {onDelete && (
               <button
                 type="button"
                 onClick={onDelete}
-                className="text-sm text-[var(--danger)] hover:underline"
+                className="text-sm text-[var(--danger)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--danger)]"
               >
                 Delete
               </button>
@@ -170,13 +192,13 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
             <button
               type="button"
               onClick={onClose}
-              className="rounded-[5px] border border-[var(--border)] bg-[var(--panel-alt)] px-3 py-1.5 text-sm text-[var(--text)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="rounded-[5px] border border-[var(--border)] bg-[var(--panel-alt)] px-3 py-1.5 text-sm text-[var(--text)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-[5px] border border-[var(--accent)] bg-[var(--accent-dim)] px-3 py-1.5 text-sm text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent)]"
+              className="rounded-[5px] border border-[var(--accent)] bg-[var(--accent-solid)] px-3 py-1.5 text-sm text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
             >
               Save
             </button>

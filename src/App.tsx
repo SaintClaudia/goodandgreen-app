@@ -100,14 +100,14 @@ function App() {
           <button
             type="button"
             onClick={() => setBillModal({ mode: 'add' })}
-            className="rounded-[5px] border border-[var(--accent)] bg-[var(--accent-dim)] px-2.5 py-1.5 text-xs text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent)]"
+            className="rounded-[5px] border border-[var(--accent)] bg-[var(--accent-solid)] px-2.5 py-1.5 text-xs text-[var(--accent-contrast)] transition-[filter] hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
           >
             + add bill
           </button>
           <button
             type="button"
             onClick={() => setPaycheckModal({ mode: 'add' })}
-            className="rounded-[5px] border border-[var(--border)] bg-[var(--panel-alt)] px-2.5 py-1.5 font-mono text-xs text-[var(--text)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="rounded-[5px] border border-[var(--border)] bg-[var(--panel-alt)] px-2.5 py-1.5 font-mono text-xs text-[var(--text)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
           >
             + add paycheck
           </button>
