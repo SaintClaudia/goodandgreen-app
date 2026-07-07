@@ -1,6 +1,6 @@
 export type PaymentStatus = 'planned' | 'paid' | 'cleared'
 
-export interface Paycheck {
+export interface Fund {
   id: string
   date: string // ISO date string, e.g. 2026-07-15
   amount: number
@@ -14,7 +14,7 @@ export interface Bill {
   autoWithdrawal: boolean
   recurringMonthly: boolean
   notes: string
-  assignedPaycheckId: string | null
+  assignedFundId: string | null
   status: PaymentStatus
   remainingBalance: number | null // e.g. payoff balance on a loan or credit card
   plannedPaymentDate: string | null // ISO date string - when you actually intend to pay it

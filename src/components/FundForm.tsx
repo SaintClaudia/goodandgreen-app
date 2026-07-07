@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import type { Paycheck } from '../types'
+import type { Fund } from '../types'
 import { Modal } from './Modal'
 
-interface PaycheckFormProps {
-  initial?: Paycheck
-  onSave: (paycheck: Pick<Paycheck, 'date' | 'amount'>) => void
+interface FundFormProps {
+  initial?: Fund
+  onSave: (fund: Pick<Fund, 'date' | 'amount'>) => void
   onClose: () => void
   onDelete?: () => void
 }
 
-export function PaycheckForm({ initial, onSave, onClose, onDelete }: PaycheckFormProps) {
+export function FundForm({ initial, onSave, onClose, onDelete }: FundFormProps) {
   const [date, setDate] = useState(initial?.date ?? '')
   const [amount, setAmount] = useState(initial ? String(initial.amount) : '')
   const [error, setError] = useState('')
@@ -30,14 +30,14 @@ export function PaycheckForm({ initial, onSave, onClose, onDelete }: PaycheckFor
   }
 
   return (
-    <Modal title={initial ? 'Edit paycheck' : 'Add paycheck'} onClose={onClose}>
+    <Modal title={initial ? 'Edit funds' : 'Add funds'} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="paycheck-date" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+          <label htmlFor="fund-date" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
             Date
           </label>
           <input
-            id="paycheck-date"
+            id="fund-date"
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -45,11 +45,11 @@ export function PaycheckForm({ initial, onSave, onClose, onDelete }: PaycheckFor
           />
         </div>
         <div>
-          <label htmlFor="paycheck-amount" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
+          <label htmlFor="fund-amount" className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">
             Amount
           </label>
           <input
-            id="paycheck-amount"
+            id="fund-amount"
             type="number"
             step="0.01"
             min="0"

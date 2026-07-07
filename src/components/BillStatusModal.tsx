@@ -53,7 +53,7 @@ export function BillStatusModal({
   }
 
   return (
-    <Modal title={bill.name} onClose={onClose}>
+    <Modal title="Edit bill" onClose={onClose}>
       <div className="space-y-4">
         <dl className="grid grid-cols-3 gap-3 text-xs">
           <div>
@@ -75,10 +75,6 @@ export function BillStatusModal({
           <div className="mt-1.5">
             <StatusChips status={status} onChange={setStatus} />
           </div>
-        </div>
-
-        <div>
-          <span className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Tags</span>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             {customChipOptions.map((option) => {
               const active = customChips.includes(option)
@@ -123,7 +119,7 @@ export function BillStatusModal({
                 onClick={() => setIsAddingChip(true)}
                 className="rounded-full border border-dashed border-[var(--border)] px-3 py-1 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               >
-                + add chip
+                + new
               </button>
             )}
           </div>

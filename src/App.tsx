@@ -1,40 +1,51 @@
-import { useState } from 'react'
-import type { Bill, Paycheck } from './types'
+import { useEffect, useState } from 'react'
+import type { Bill, Fund } from './types'
 import { useLocalStorage } from './useLocalStorage'
 import { generateId } from './utils'
 import { PlanningTable } from './components/PlanningTable'
-import { PaycheckForm } from './components/PaycheckForm'
+import { FundForm } from './components/FundForm'
 import { BillForm, type BillDraft } from './components/BillForm'
 import { BillStatusModal, type BillStatusUpdate } from './components/BillStatusModal'
 
-type PaycheckModalState = { mode: 'add' } | { mode: 'edit'; paycheck: Paycheck } | null
+type FundModalState = { mode: 'add' } | { mode: 'edit'; fund: Fund } | null
 type BillModalState = { mode: 'add' } | { mode: 'edit'; bill: Bill } | null
 
 function App() {
-  const [paychecks, setPaychecks] = useLocalStorage<Paycheck[]>('paychecks', [])
+  // Storage key stays "paychecks" to avoid orphaning data already saved by users.
+  const [funds, setFunds] = useLocalStorage<Fund[]>('paychecks', [])
   const [bills, setBills] = useLocalStorage<Bill[]>('bills', [])
+
+  // One-time migration: bills saved before the assignedPaycheckId -> assignedFundId rename.
+  useEffect(() => {
+    setBills((prev) =>
+      prev.map((b) => {
+        const legacy = b as Bill & { assignedPaycheckId?: string | null }
+        if (b.assignedFundId !== undefined || legacy.assignedPaycheckId === undefined) return b
+        const { assignedPaycheckId, ...rest } = legacy
+        return { ...rest, assignedFundId: assignedPaycheckId }
+      }),
+    )
+  }, [])
   const [customChipOptions, setCustomChipOptions] = useLocalStorage<string[]>('customChipOptions', [])
-  const [paycheckModal, setPaycheckModal] = useState<PaycheckModalState>(null)
+  const [fundModal, setFundModal] = useState<FundModalState>(null)
   const [billModal, setBillModal] = useState<BillModalState>(null)
   const [statusModalBill, setStatusModalBill] = useState<Bill | null>(null)
 
-  function handleSavePaycheck(draft: Pick<Paycheck, 'date' | 'amount'>) {
-    if (paycheckModal?.mode === 'edit') {
-      const id = paycheckModal.paycheck.id
-      setPaychecks((prev) => prev.map((p) => (p.id === id ? { ...p, ...draft } : p)))
+  function handleSaveFund(draft: Pick<Fund, 'date' | 'amount'>) {
+    if (fundModal?.mode === 'edit') {
+      const id = fundModal.fund.id
+      setFunds((prev) => prev.map((f) => (f.id === id ? { ...f, ...draft } : f)))
     } else {
-      setPaychecks((prev) => [...prev, { id: generateId(), ...draft }])
+      setFunds((prev) => [...prev, { id: generateId(), ...draft }])
     }
   }
 
-  function handleDeletePaycheck() {
-    if (paycheckModal?.mode !== 'edit') return
-    const id = paycheckModal.paycheck.id
-    setPaychecks((prev) => prev.filter((p) => p.id !== id))
-    setBills((prev) =>
-      prev.map((b) => (b.assignedPaycheckId === id ? { ...b, assignedPaycheckId: null } : b)),
-    )
-    setPaycheckModal(null)
+  function handleDeleteFund() {
+    if (fundModal?.mode !== 'edit') return
+    const id = fundModal.fund.id
+    setFunds((prev) => prev.filter((f) => f.id !== id))
+    setBills((prev) => prev.map((b) => (b.assignedFundId === id ? { ...b, assignedFundId: null } : b)))
+    setFundModal(null)
   }
 
   function handleSaveBill(draft: BillDraft) {
@@ -46,7 +57,7 @@ function App() {
         ...prev,
         {
           id: generateId(),
-          assignedPaycheckId: null,
+          assignedFundId: null,
           customChips: [],
           ...draft,
         },
@@ -61,10 +72,8 @@ function App() {
     setBillModal(null)
   }
 
-  function handleAssignBill(billId: string, paycheckId: string | null) {
-    setBills((prev) =>
-      prev.map((b) => (b.id === billId ? { ...b, assignedPaycheckId: paycheckId } : b)),
-    )
+  function handleAssignBill(billId: string, fundId: string | null) {
+    setBills((prev) => prev.map((b) => (b.id === billId ? { ...b, assignedFundId: fundId } : b)))
   }
 
   function handleCreateCustomChip(label: string) {
@@ -101,23 +110,23 @@ function App() {
 
         <PlanningTable
           bills={bills}
-          paychecks={paychecks}
+          funds={funds}
           onAssignBill={handleAssignBill}
           onEditBill={(bill) => setBillModal({ mode: 'edit', bill })}
           onOpenBillStatus={(bill) => setStatusModalBill(bill)}
-          onEditPaycheck={(paycheck) => setPaycheckModal({ mode: 'edit', paycheck })}
-          onAddPaycheck={() => setPaycheckModal({ mode: 'add' })}
+          onEditFund={(fund) => setFundModal({ mode: 'edit', fund })}
+          onAddFund={() => setFundModal({ mode: 'add' })}
           onAddBill={() => setBillModal({ mode: 'add' })}
           onReorderBills={handleReorderBills}
         />
       </div>
 
-      {paycheckModal && (
-        <PaycheckForm
-          initial={paycheckModal.mode === 'edit' ? paycheckModal.paycheck : undefined}
-          onSave={handleSavePaycheck}
-          onClose={() => setPaycheckModal(null)}
-          onDelete={paycheckModal.mode === 'edit' ? handleDeletePaycheck : undefined}
+      {fundModal && (
+        <FundForm
+          initial={fundModal.mode === 'edit' ? fundModal.fund : undefined}
+          onSave={handleSaveFund}
+          onClose={() => setFundModal(null)}
+          onDelete={fundModal.mode === 'edit' ? handleDeleteFund : undefined}
         />
       )}
 

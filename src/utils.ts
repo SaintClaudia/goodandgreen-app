@@ -1,4 +1,4 @@
-import type { Bill, Paycheck } from './types'
+import type { Bill, Fund } from './types'
 
 export function generateId(): string {
   return crypto.randomUUID()
@@ -29,16 +29,16 @@ export function formatDateCompact(iso: string): string {
   return `${month}.${day}`
 }
 
-export interface PaycheckSummary {
-  paycheckAmount: number
+export interface FundSummary {
+  fundAmount: number
   plannedTotal: number
   paidOrClearedTotal: number
   remainingPlanned: number
   remainingCleared: number
 }
 
-export function summarizePaycheck(paycheck: Paycheck, bills: Bill[]): PaycheckSummary {
-  const assigned = bills.filter((b) => b.assignedPaycheckId === paycheck.id)
+export function summarizeFund(fund: Fund, bills: Bill[]): FundSummary {
+  const assigned = bills.filter((b) => b.assignedFundId === fund.id)
   const plannedTotal = assigned.reduce((sum, b) => sum + b.amount, 0)
   const paidOrClearedTotal = assigned
     .filter((b) => b.status === 'paid' || b.status === 'cleared')
@@ -48,10 +48,10 @@ export function summarizePaycheck(paycheck: Paycheck, bills: Bill[]): PaycheckSu
     .reduce((sum, b) => sum + b.amount, 0)
 
   return {
-    paycheckAmount: paycheck.amount,
+    fundAmount: fund.amount,
     plannedTotal,
     paidOrClearedTotal,
-    remainingPlanned: paycheck.amount - plannedTotal,
-    remainingCleared: paycheck.amount - clearedTotal,
+    remainingPlanned: fund.amount - plannedTotal,
+    remainingCleared: fund.amount - clearedTotal,
   }
 }
