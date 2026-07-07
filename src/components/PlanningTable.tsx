@@ -132,34 +132,33 @@ export function PlanningTable({
                       </p>
                     )}
                   </div>
-                  <select
-                    value={bill.assignedPaycheckId ?? ''}
-                    onChange={(e) => onAssignBill(bill.id, e.target.value || null)}
-                    className="mt-2 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-1.5 py-1 text-xs text-[var(--text)] focus:border-[var(--accent)] focus:outline-none"
-                  >
-                    <option value="">Unassigned</option>
-                    {sortedPaychecks.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {formatDate(p.date)}
-                      </option>
-                    ))}
-                  </select>
                 </td>
-                {sortedPaychecks.map((paycheck) => (
-                  <td key={paycheck.id} className="px-3 py-3 align-top">
-                    {bill.assignedPaycheckId === paycheck.id ? (
-                      <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
-                        <div className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</div>
-                        <StatusSelect
-                          status={bill.status}
-                          onChange={(status) => onStatusChange(bill.id, status)}
+                {sortedPaychecks.map((paycheck) => {
+                  const isAssigned = bill.assignedPaycheckId === paycheck.id
+                  return (
+                    <td key={paycheck.id} className="px-3 py-3 align-top">
+                      <div className="flex items-start gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isAssigned}
+                          onChange={(e) => onAssignBill(bill.id, e.target.checked ? paycheck.id : null)}
+                          className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-[var(--border)] bg-[var(--bg)] text-[var(--accent)] focus:ring-[var(--accent)]"
                         />
+                        {isAssigned ? (
+                          <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                            <div className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</div>
+                            <StatusSelect
+                              status={bill.status}
+                              onChange={(status) => onStatusChange(bill.id, status)}
+                            />
+                          </div>
+                        ) : (
+                          <span className="mt-0.5 text-xs text-[var(--muted)]">assign</span>
+                        )}
                       </div>
-                    ) : (
-                      <span className="text-[var(--border)]">—</span>
-                    )}
-                  </td>
-                ))}
+                    </td>
+                  )
+                })}
                 <td />
               </tr>
             )
