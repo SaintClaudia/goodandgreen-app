@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Bill, Paycheck, PaymentStatus } from './types'
 import { useLocalStorage } from './useLocalStorage'
 import { useTheme } from './useTheme'
-import { generateId, sortByDueDate } from './utils'
+import { generateId } from './utils'
 import { PlanningTable } from './components/PlanningTable'
 import { PaycheckForm } from './components/PaycheckForm'
 import { BillForm, type BillDraft } from './components/BillForm'
@@ -71,6 +71,20 @@ function App() {
     setBills((prev) => prev.map((b) => (b.id === billId ? { ...b, status } : b)))
   }
 
+  function handleReorderBills(draggedId: string, targetId: string) {
+    if (draggedId === targetId) return
+    setBills((prev) => {
+      const draggedIndex = prev.findIndex((b) => b.id === draggedId)
+      if (draggedIndex === -1) return prev
+      const next = [...prev]
+      const [dragged] = next.splice(draggedIndex, 1)
+      const targetIndex = next.findIndex((b) => b.id === targetId)
+      if (targetIndex === -1) return prev
+      next.splice(targetIndex, 0, dragged)
+      return next
+    })
+  }
+
   return (
     <div className="min-h-full bg-[var(--bg)] text-[var(--text)]">
       <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
@@ -100,7 +114,7 @@ function App() {
         </div>
 
         <PlanningTable
-          bills={sortByDueDate(bills)}
+          bills={bills}
           paychecks={paychecks}
           onAssignBill={handleAssignBill}
           onStatusChange={handleStatusChange}
@@ -108,6 +122,7 @@ function App() {
           onEditPaycheck={(paycheck) => setPaycheckModal({ mode: 'edit', paycheck })}
           onAddPaycheck={() => setPaycheckModal({ mode: 'add' })}
           onAddBill={() => setBillModal({ mode: 'add' })}
+          onReorderBills={handleReorderBills}
         />
       </div>
 

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Bill, Paycheck, PaymentStatus } from '../types'
 import { formatCurrency, formatDate, summarizePaycheck } from '../utils'
 import { StatusSelect } from './StatusBadge'
@@ -11,6 +12,7 @@ interface PlanningTableProps {
   onEditPaycheck: (paycheck: Paycheck) => void
   onAddPaycheck: () => void
   onAddBill: () => void
+  onReorderBills: (draggedId: string, targetId: string) => void
 }
 
 export function PlanningTable({
@@ -22,8 +24,10 @@ export function PlanningTable({
   onEditPaycheck,
   onAddPaycheck,
   onAddBill,
+  onReorderBills,
 }: PlanningTableProps) {
   const sortedPaychecks = [...paychecks].sort((a, b) => a.date.localeCompare(b.date))
+  const [dragOverId, setDragOverId] = useState<string | null>(null)
 
   return (
     <div className="overflow-x-auto rounded-[6px] border border-[var(--border)] bg-[var(--panel)]">
@@ -87,50 +91,75 @@ export function PlanningTable({
             return (
               <tr
                 key={bill.id}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setDragOverId(bill.id)
+                }}
+                onDragLeave={() => setDragOverId((current) => (current === bill.id ? null : current))}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  const draggedId = e.dataTransfer.getData('text/plain')
+                  setDragOverId(null)
+                  if (draggedId) onReorderBills(draggedId, bill.id)
+                }}
                 className={`border-b border-[var(--border)] last:border-b-0 ${
                   bill.status === 'cleared' ? 'bg-[var(--panel-alt)]/40' : ''
-                }`}
+                } ${dragOverId === bill.id ? 'border-t-2 border-t-[var(--accent)]' : ''}`}
               >
                 <td className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
-                  <div className={bill.status === 'cleared' ? 'opacity-60' : ''}>
-                    <button
-                      type="button"
-                      onClick={() => onEditBill(bill)}
-                      className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline"
+                  <div className="flex items-start gap-2">
+                    <span
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', bill.id)
+                        e.dataTransfer.effectAllowed = 'move'
+                      }}
+                      onDragEnd={() => setDragOverId(null)}
+                      aria-label="Drag to reorder"
+                      className="mt-0.5 flex-shrink-0 cursor-grab select-none leading-none text-[var(--muted)] active:cursor-grabbing"
                     >
-                      {bill.name}
-                    </button>
-                    <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <span className="text-xs text-[var(--muted)]">Due {formatDate(bill.dueDate)}</span>
-                      {bill.autoWithdrawal && (
-                        <span className="rounded-full border border-[var(--accent-dim)] px-1.5 py-0.5 text-[10px] text-[var(--accent)]">
-                          Auto-pay
-                        </span>
+                      ⠿
+                    </span>
+                    <div className={`min-w-0 flex-1 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                      <button
+                        type="button"
+                        onClick={() => onEditBill(bill)}
+                        className="text-left text-[13.5px] font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline"
+                      >
+                        {bill.name}
+                      </button>
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs text-[var(--muted)]">Due {formatDate(bill.dueDate)}</span>
+                        {bill.autoWithdrawal && (
+                          <span className="rounded-full border border-[var(--accent-dim)] px-1.5 py-0.5 text-[10px] text-[var(--accent)]">
+                            Auto-pay
+                          </span>
+                        )}
+                        {bill.recurringMonthly && (
+                          <span className="rounded-full border border-[var(--border)] px-1.5 py-0.5 text-[9.5px] text-[var(--muted)]">
+                            Monthly
+                          </span>
+                        )}
+                      </div>
+                      {dueBeforePaycheck && (
+                        <p className="mt-1 text-[11px] font-medium text-[var(--danger)]">
+                          ⚠ Due before this paycheck arrives
+                        </p>
                       )}
-                      {bill.recurringMonthly && (
-                        <span className="rounded-full border border-[var(--border)] px-1.5 py-0.5 text-[9.5px] text-[var(--muted)]">
-                          Monthly
-                        </span>
+                      {bill.remainingBalance != null && (
+                        <p className="mt-1 text-xs text-[var(--muted)]">
+                          Balance owed:{' '}
+                          <span className="font-medium text-[var(--text)]">
+                            {formatCurrency(bill.remainingBalance)}
+                          </span>
+                        </p>
+                      )}
+                      {bill.notes && (
+                        <p className="mt-1 truncate text-xs italic text-[var(--muted)]" title={bill.notes}>
+                          {bill.notes}
+                        </p>
                       )}
                     </div>
-                    {dueBeforePaycheck && (
-                      <p className="mt-1 text-[11px] font-medium text-[var(--danger)]">
-                        ⚠ Due before this paycheck arrives
-                      </p>
-                    )}
-                    {bill.remainingBalance != null && (
-                      <p className="mt-1 text-xs text-[var(--muted)]">
-                        Balance owed:{' '}
-                        <span className="font-medium text-[var(--text)]">
-                          {formatCurrency(bill.remainingBalance)}
-                        </span>
-                      </p>
-                    )}
-                    {bill.notes && (
-                      <p className="mt-1 truncate text-xs italic text-[var(--muted)]" title={bill.notes}>
-                        {bill.notes}
-                      </p>
-                    )}
                   </div>
                 </td>
                 {sortedPaychecks.map((paycheck) => {

@@ -48,8 +48,3 @@ export function summarizePaycheck(paycheck: Paycheck, bills: Bill[]): PaycheckSu
     remainingCleared: paycheck.amount - clearedTotal,
   }
 }
-
-/** Sorts bills by due date, unassigned/undated last. */
-export function sortByDueDate(bills: Bill[]): Bill[] {
-  return [...bills].sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-}
