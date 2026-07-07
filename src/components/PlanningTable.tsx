@@ -68,8 +68,19 @@ export function PlanningTable({
       <table className="w-full min-w-max border-collapse text-[13px]">
         <thead>
           <tr className="border-b border-[var(--border)] bg-[var(--panel-alt)]">
-            <th className="sticky left-0 z-10 min-w-[220px] border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 text-left align-bottom text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-              Bills
+            <th className="sticky left-0 z-10 min-w-[220px] border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 text-left align-bottom">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                  Bills
+                </span>
+                <button
+                  type="button"
+                  onClick={onAddBill}
+                  className="rounded-[5px] border border-dashed border-[var(--border)] px-2 py-1 text-[10px] normal-case text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                >
+                  + add bill
+                </button>
+              </div>
             </th>
             {sortedPaychecks.map((paycheck) => (
               <th key={paycheck.id} className="min-w-[160px] px-3 py-3 text-left align-bottom">
@@ -93,7 +104,7 @@ export function PlanningTable({
                 onClick={onAddPaycheck}
                 className="rounded-[5px] border border-dashed border-[var(--border)] px-3 py-1.5 text-xs text-[var(--muted)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
               >
-                + add paycheck
+                + add funds
               </button>
             </th>
           </tr>
