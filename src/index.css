@@ -1,25 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
-  --bg: #f5f5f4;
-  --panel: #ffffff;
-  --panel-alt: #ececea;
-  --border: #ddddd9;
-  --text: #1e1e1e;
-  --muted: #6a6a66;
-  --accent: #2f5fd1;
-  --accent-dim: #4d74d6;
-  --accent-solid: #3157bd;
-  --accent-tint: #e3eafb;
-  --accent-contrast: #ffffff;
-  --neutral-fill: #e2e2df;
-  --danger: #c4384a;
-  --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
-}
-
-.dark {
   --bg: #1e1e1e;
   --panel: #252526;
   --panel-alt: #2d2d2d;
@@ -33,6 +14,8 @@
   --accent-contrast: #ffffff;
   --neutral-fill: #3a3a3a;
   --danger: #e06c75;
+  --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
 }
 
 html,

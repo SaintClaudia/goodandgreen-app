@@ -106,7 +106,7 @@ export function BillForm({ initial, onSave, onClose, onDelete }: BillFormProps) 
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:[color-scheme:dark]"
+              className="mt-1 w-full rounded-[5px] border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text)] focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
             />
           </div>
         </div>

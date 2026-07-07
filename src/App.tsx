@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import type { Bill, Paycheck, PaymentStatus } from './types'
 import { useLocalStorage } from './useLocalStorage'
-import { useTheme } from './useTheme'
 import { generateId } from './utils'
 import { PlanningTable } from './components/PlanningTable'
 import { PaycheckForm } from './components/PaycheckForm'
 import { BillForm, type BillDraft } from './components/BillForm'
-import { ThemeToggle } from './components/ThemeToggle'
 
 type PaycheckModalState = { mode: 'add' } | { mode: 'edit'; paycheck: Paycheck } | null
 type BillModalState = { mode: 'add' } | { mode: 'edit'; bill: Bill } | null
@@ -16,7 +14,6 @@ function App() {
   const [bills, setBills] = useLocalStorage<Bill[]>('bills', [])
   const [paycheckModal, setPaycheckModal] = useState<PaycheckModalState>(null)
   const [billModal, setBillModal] = useState<BillModalState>(null)
-  const { theme, toggleTheme } = useTheme()
 
   function handleSavePaycheck(draft: Pick<Paycheck, 'date' | 'amount'>) {
     if (paycheckModal?.mode === 'edit') {
@@ -91,9 +88,6 @@ function App() {
         <header className="mb-4 flex items-center gap-2">
           <span className="h-2 w-2 flex-shrink-0 rounded-full bg-[#0bf81e]" />
           <span className="text-[13px] text-[var(--text)]">sheets</span>
-          <div className="ml-auto">
-            <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          </div>
         </header>
 
         <PlanningTable
