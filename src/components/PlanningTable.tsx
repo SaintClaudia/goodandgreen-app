@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Bill, Fund } from '../types'
 import { formatCurrency, formatDate, formatDateCompact, summarizeFund } from '../utils'
+import { useLocalStorage } from '../useLocalStorage'
 import { StatusChip } from './StatusBadge'
 
 const ASSIGN_FLASH_MS = 1800
+const MIN_BILLS_COLUMN_WIDTH = 180
+const MAX_BILLS_COLUMN_WIDTH = 560
 
 interface PlanningTableProps {
   bills: Bill[]
@@ -32,6 +35,8 @@ export function PlanningTable({
   const [dragOverId, setDragOverId] = useState<string | null>(null)
   const [justAssigned, setJustAssigned] = useState<Set<string>>(new Set())
   const flashTimeouts = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+  const [billsColumnWidth, setBillsColumnWidth] = useLocalStorage('billsColumnWidth', 260)
+  const resizeState = useRef<{ startX: number; startWidth: number } | null>(null)
 
   useEffect(() => {
     const timeouts = flashTimeouts.current
@@ -39,6 +44,36 @@ export function PlanningTable({
       timeouts.forEach((timeout) => clearTimeout(timeout))
     }
   }, [])
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('pointermove', handleColumnResizeMove)
+      window.removeEventListener('pointerup', handleColumnResizeEnd)
+    }
+  }, [])
+
+  function handleColumnResizeStart(e: React.PointerEvent) {
+    e.preventDefault()
+    resizeState.current = { startX: e.clientX, startWidth: billsColumnWidth }
+    window.addEventListener('pointermove', handleColumnResizeMove)
+    window.addEventListener('pointerup', handleColumnResizeEnd)
+  }
+
+  function handleColumnResizeMove(e: PointerEvent) {
+    if (!resizeState.current) return
+    const delta = e.clientX - resizeState.current.startX
+    const next = Math.min(
+      MAX_BILLS_COLUMN_WIDTH,
+      Math.max(MIN_BILLS_COLUMN_WIDTH, resizeState.current.startWidth + delta),
+    )
+    setBillsColumnWidth(next)
+  }
+
+  function handleColumnResizeEnd() {
+    resizeState.current = null
+    window.removeEventListener('pointermove', handleColumnResizeMove)
+    window.removeEventListener('pointerup', handleColumnResizeEnd)
+  }
 
   function flashAssigned(key: string) {
     setJustAssigned((prev) => new Set(prev).add(key))
@@ -64,11 +99,14 @@ export function PlanningTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-[6px] border border-[var(--border)] bg-[var(--panel)]">
+    <div
+      className="overflow-x-auto rounded-[6px] border border-[var(--border)] bg-[var(--panel)]"
+      style={{ '--bills-col-width': `${billsColumnWidth}px` } as React.CSSProperties}
+    >
       <table className="w-full min-w-max border-collapse text-[13px]">
         <thead>
           <tr className="border-b border-[var(--border)] bg-[var(--panel-alt)]">
-            <th className="sticky left-0 z-10 min-w-[220px] border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 text-left align-bottom">
+            <th className="sticky left-0 z-10 w-[var(--bills-col-width)] min-w-[180px] max-w-[560px] border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 text-left align-bottom">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
                   Bills
@@ -81,6 +119,13 @@ export function PlanningTable({
                   + add bill
                 </button>
               </div>
+              <div
+                onPointerDown={handleColumnResizeStart}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize bills column"
+                className="absolute inset-y-0 right-0 z-20 w-2 cursor-col-resize touch-none select-none hover:bg-[var(--accent)]"
+              />
             </th>
             {sortedFunds.map((fund) => (
               <th key={fund.id} className="min-w-[160px] px-3 py-3 text-left align-bottom">
@@ -150,7 +195,7 @@ export function PlanningTable({
                   bill.status === 'cleared' ? 'bg-[var(--panel-alt)]/40' : ''
                 } ${dragOverId === bill.id ? 'border-t-2 border-t-[var(--accent)]' : ''}`}
               >
-                <td className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
+                <td className="sticky left-0 z-10 w-[var(--bills-col-width)] min-w-[180px] max-w-[560px] overflow-hidden border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
                   <div className="flex h-full items-center gap-2">
                     <button
                       type="button"
@@ -288,7 +333,7 @@ export function PlanningTable({
         {sortedFunds.length > 0 && (
           <tfoot>
             <tr className="border-t-2 border-[var(--border)] bg-[var(--panel-alt)]">
-              <td className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 align-top text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+              <td className="sticky left-0 z-10 w-[var(--bills-col-width)] min-w-[180px] max-w-[560px] border-r border-[var(--border)] bg-[var(--panel-alt)] px-4 py-3 align-top text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
                 Summary
               </td>
               {sortedFunds.map((fund) => {
