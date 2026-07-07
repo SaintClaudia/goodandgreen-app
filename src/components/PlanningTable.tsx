@@ -232,16 +232,16 @@ export function PlanningTable({
                   return (
                     <td key={paycheck.id} className="px-3 py-3 align-top">
                       {isAssigned ? (
-                        <div className="flex items-start justify-between gap-2">
-                          <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
-                            <div className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</div>
-                            <StatusSelect
-                              status={bill.status}
-                              onChange={(status) => onStatusChange(bill.id, status)}
-                              label={`${bill.name} status for ${formatDate(paycheck.date)} paycheck`}
-                            />
+                        <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</span>
+                            {toggle}
                           </div>
-                          {toggle}
+                          <StatusSelect
+                            status={bill.status}
+                            onChange={(status) => onStatusChange(bill.id, status)}
+                            label={`${bill.name} status for ${formatDate(paycheck.date)} paycheck`}
+                          />
                         </div>
                       ) : (
                         <div className="flex justify-end">{toggle}</div>
