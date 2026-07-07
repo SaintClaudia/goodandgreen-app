@@ -352,7 +352,7 @@ export function PlanningTable({
                 return (
                   <td key={fund.id} className="px-3 py-3 align-top text-xs text-[var(--muted)]">
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Remaining</div>
+                      <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Available</div>
                       <div
                         className={`text-[18px] font-semibold ${
                           summary.remainingPlanned < 0 ? 'text-[var(--danger)]' : 'text-[var(--text)]'
@@ -390,13 +390,13 @@ export function PlanningTable({
                           </dd>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <dt>Planned bills</dt>
+                          <dt>Pending</dt>
                           <dd className="font-medium text-[var(--text)]">
                             −{formatCurrency(summary.plannedTotal)}
                           </dd>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <dt>Paid / cleared</dt>
+                          <dt>Cleared</dt>
                           <dd className="font-medium text-[var(--accent)]">
                             {formatCurrency(summary.paidOrClearedTotal)}
                           </dd>
@@ -408,7 +408,7 @@ export function PlanningTable({
                           </dd>
                         </div>
                         <div className="flex justify-between gap-2 border-t border-[var(--border)] pt-1">
-                          <dt className="font-medium text-[var(--muted)]">Remaining (cleared)</dt>
+                          <dt className="font-medium text-[var(--muted)]">Current balance</dt>
                           <dd
                             className={`font-semibold ${
                               summary.remainingCleared < 0 ? 'text-[var(--danger)]' : 'text-[var(--accent)]'
