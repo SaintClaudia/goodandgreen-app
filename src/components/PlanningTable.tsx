@@ -249,12 +249,12 @@ export function PlanningTable({
                             ? `Unassign ${bill.name} from this paycheck`
                             : `Assign ${bill.name} to this paycheck`
                         }
-                        className={`h-full min-h-[52px] w-full cursor-pointer px-3 py-3 text-left transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] ${
+                        className={`m-1 h-[calc(100%-0.5rem)] min-h-[52px] w-[calc(100%-0.5rem)] cursor-pointer rounded-[6px] border border-dashed px-3 py-3 text-left transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] ${
                           isAssigned
                             ? isFlashing
-                              ? 'bg-[var(--accent)]'
-                              : 'bg-[var(--neutral-fill)]'
-                            : 'hover:bg-[var(--panel-alt)]'
+                              ? 'border-[var(--accent)] bg-[var(--accent)]'
+                              : 'border-[var(--neutral-fill)] bg-[var(--neutral-fill)]'
+                            : 'border-transparent hover:border-[var(--border)]'
                         }`}
                       >
                         {isAssigned && (
