@@ -107,7 +107,7 @@ export function PlanningTable({
                 } ${dragOverId === bill.id ? 'border-t-2 border-t-[var(--accent)]' : ''}`}
               >
                 <td className="sticky left-0 z-10 border-r border-[var(--border)] bg-[var(--panel)] px-4 py-3 align-top">
-                  <div className="flex items-start gap-2">
+                  <div className="flex h-full items-center gap-2">
                     <span
                       draggable
                       onDragStart={(e) => {
@@ -116,11 +116,11 @@ export function PlanningTable({
                       }}
                       onDragEnd={() => setDragOverId(null)}
                       aria-label="Drag to reorder"
-                      className="mt-0.5 flex-shrink-0 cursor-pointer select-none leading-none text-[var(--muted)]"
+                      className="flex-shrink-0 cursor-pointer select-none leading-none text-[var(--muted)]"
                     >
                       ⠿
                     </span>
-                    <div className={`min-w-0 flex-1 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                    <div className={`min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
                       <button
                         type="button"
                         onClick={() => onEditBill(bill)}
