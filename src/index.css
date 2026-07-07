@@ -13,7 +13,7 @@
   --accent-tint: rgba(82, 139, 255, 0.14);
   --accent-contrast: #ffffff;
   --success: #4ade80;
-  --success-tint: rgba(74, 222, 128, 0.14);
+  --success-dark: #1a3324;
   --danger: #e06c75;
   --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
   color-scheme: dark;

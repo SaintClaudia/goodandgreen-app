@@ -3,7 +3,7 @@ import type { PaymentStatus } from '../types'
 const STATUS_STYLES: Record<PaymentStatus, string> = {
   planned: 'bg-transparent text-[var(--muted)] border-[var(--border)]',
   paid: 'bg-[var(--panel-alt)] text-[var(--text)] border-[var(--border)]',
-  cleared: 'bg-[var(--success-tint)] text-[var(--success)] border-[var(--success)]',
+  cleared: 'bg-[var(--success-dark)] text-[var(--success)] border-[var(--success-dark)]',
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
