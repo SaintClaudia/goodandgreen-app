@@ -72,36 +72,30 @@ function App() {
   }
 
   return (
-    <div className="min-h-full bg-slate-100 dark:bg-slate-900">
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-        <div className="mx-auto flex max-w-7xl items-start justify-between px-4 py-4 sm:px-6">
-          <div>
-            <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-              Paycheck Bill Planner
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Plan which bills come out of each paycheck and track what's cleared.
-            </p>
+    <div className="min-h-full bg-[var(--bg)] text-[var(--text)]">
+      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
+        <header className="mb-4 flex items-center gap-2">
+          <span className="h-2 w-2 flex-shrink-0 rounded-full bg-[#0bf81e]" />
+          <span className="text-[13px] text-[var(--text)]">paycheck planner</span>
+          <div className="ml-auto">
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
-          <ThemeToggle theme={theme} onToggle={toggleTheme} />
-        </div>
-      </header>
+        </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-3.5 flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setBillModal({ mode: 'add' })}
-            className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+            className="rounded-[5px] border border-[var(--accent)] bg-[var(--accent-dim)] px-2.5 py-1.5 text-xs text-[var(--accent-contrast)] transition-colors hover:bg-[var(--accent)]"
           >
-            + Add bill
+            + add bill
           </button>
           <button
             type="button"
             onClick={() => setPaycheckModal({ mode: 'add' })}
-            className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="rounded-[5px] border border-[var(--border)] bg-[var(--panel-alt)] px-2.5 py-1.5 font-mono text-xs text-[var(--text)] transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
           >
-            + Add paycheck
+            + add paycheck
           </button>
         </div>
 
@@ -115,7 +109,7 @@ function App() {
           onAddPaycheck={() => setPaycheckModal({ mode: 'add' })}
           onAddBill={() => setBillModal({ mode: 'add' })}
         />
-      </main>
+      </div>
 
       {paycheckModal && (
         <PaycheckForm
