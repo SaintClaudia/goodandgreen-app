@@ -384,6 +384,7 @@ export function PlanningTable({
                         aria-expanded={openDetails.has(fund.id)}
                         className="flex w-full cursor-pointer items-center justify-end gap-1 text-[11px] text-[var(--muted)] hover:text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                       >
+                        Details
                         <svg
                           viewBox="0 0 20 20"
                           fill="currentColor"
@@ -397,7 +398,6 @@ export function PlanningTable({
                             clipRule="evenodd"
                           />
                         </svg>
-                        Details
                       </button>
                       <div
                         className={`grid transition-[grid-template-rows] duration-200 ease-out ${
