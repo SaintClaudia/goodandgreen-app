@@ -249,11 +249,9 @@ export function PlanningTable({
                           isAssigned ? `Unassign ${bill.name} from these funds` : `Assign ${bill.name} to these funds`
                         }
                         className={`absolute inset-1 min-h-[52px] cursor-pointer rounded-[6px] border border-dashed px-3 py-3 text-right transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] ${
-                          isAssigned
-                            ? isFlashing
-                              ? 'border-[var(--accent)] bg-[var(--accent)]'
-                              : 'border-[var(--neutral-fill)] bg-[var(--neutral-fill)]'
-                            : 'border-transparent hover:border-[var(--border)]'
+                          isAssigned && isFlashing
+                            ? 'border-[var(--accent)] bg-[var(--accent)]'
+                            : 'border-transparent bg-transparent hover:border-[var(--border)]'
                         }`}
                       >
                         {isAssigned && (
