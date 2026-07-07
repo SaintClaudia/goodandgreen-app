@@ -181,9 +181,6 @@ export function PlanningTable({
             </tr>
           )}
           {bills.map((bill, index) => {
-            const assignedFund = sortedFunds.find((f) => f.id === bill.assignedFundId)
-            const dueBeforeFund = assignedFund && bill.dueDate && bill.dueDate < assignedFund.date
-
             return (
               <tr
                 key={bill.id}
@@ -259,11 +256,6 @@ export function PlanningTable({
                           )}
                         </span>
                       </div>
-                      {dueBeforeFund && (
-                        <p className="mt-1 text-[11px] font-medium text-[var(--danger)]">
-                          ⚠ Due before these funds arrive
-                        </p>
-                      )}
                       {bill.notes && (
                         <p className="mt-1 truncate text-xs italic text-[var(--muted)]" title={bill.notes}>
                           {bill.notes}
