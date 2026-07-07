@@ -224,44 +224,57 @@ export function PlanningTable({
                   const isAssigned = bill.assignedPaycheckId === paycheck.id
                   const flashKey = `${bill.id}:${paycheck.id}`
                   const isFlashing = justAssigned.has(flashKey)
-                  const toggle = (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextAssigned = !isAssigned
-                        onAssignBill(bill.id, nextAssigned ? paycheck.id : null)
-                        if (nextAssigned) flashAssigned(flashKey)
-                      }}
-                      aria-label={isAssigned ? 'Unassign from this paycheck' : 'Assign to this paycheck'}
-                      aria-pressed={isAssigned}
-                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
-                        isAssigned
-                          ? isFlashing
-                            ? 'border-[var(--accent)] bg-[var(--accent)]'
-                            : 'border-[var(--border)] bg-[var(--neutral-fill)]'
-                          : 'border-dashed border-[var(--border)] bg-transparent hover:border-[var(--accent)]'
-                      }`}
-                    />
-                  )
+
+                  function toggleAssignment() {
+                    const nextAssigned = !isAssigned
+                    onAssignBill(bill.id, nextAssigned ? paycheck.id : null)
+                    if (nextAssigned) flashAssigned(flashKey)
+                  }
+
                   return (
-                    <td key={paycheck.id} className="px-3 py-3 align-top">
-                      {isAssigned ? (
-                        <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
-                          <div className="flex items-center justify-between gap-2">
+                    <td key={paycheck.id} className="p-0 align-top">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={toggleAssignment}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            toggleAssignment()
+                          }
+                        }}
+                        aria-pressed={isAssigned}
+                        aria-label={
+                          isAssigned
+                            ? `Unassign ${bill.name} from this paycheck`
+                            : `Assign ${bill.name} to this paycheck`
+                        }
+                        className={`h-full min-h-[52px] w-full cursor-pointer px-3 py-3 text-left transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] ${
+                          isAssigned
+                            ? isFlashing
+                              ? 'bg-[var(--accent)]'
+                              : 'bg-[var(--neutral-fill)]'
+                            : 'hover:bg-[var(--panel-alt)]'
+                        }`}
+                      >
+                        {isAssigned && (
+                          <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
                             <button
                               type="button"
-                              onClick={() => onEditBill(bill)}
-                              className="font-semibold text-[var(--text)] hover:text-[var(--accent)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onEditBill(bill)
+                              }}
+                              className={`font-semibold hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
+                                isFlashing ? 'text-white' : 'text-[var(--text)] hover:text-[var(--accent)]'
+                              }`}
                             >
                               {formatCurrency(bill.amount)}
                             </button>
-                            {toggle}
+                            <StatusChip status={bill.status} />
                           </div>
-                          <StatusChip status={bill.status} />
-                        </div>
-                      ) : (
-                        <div className="flex justify-end">{toggle}</div>
-                      )}
+                        )}
+                      </div>
                     </td>
                   )
                 })}
