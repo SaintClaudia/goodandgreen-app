@@ -169,7 +169,7 @@ export function PlanningTable({
                         }
                       }}
                       aria-label={`Reorder ${bill.name}. Drag, or press arrow up or down, to move.`}
-                      className="flex-shrink-0 cursor-pointer select-none border-none bg-transparent p-0 leading-none text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+                      className="flex-shrink-0 cursor-grab select-none border-none bg-transparent p-0 leading-none text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] active:cursor-grabbing"
                     >
                       ⠿
                     </button>
