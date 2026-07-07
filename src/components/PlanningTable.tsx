@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Bill, Paycheck, PaymentStatus } from '../types'
 import { formatCurrency, formatDate, summarizePaycheck } from '../utils'
 import { StatusSelect } from './StatusBadge'
+
+const ASSIGN_FLASH_MS = 1800
 
 interface PlanningTableProps {
   bills: Bill[]
@@ -28,6 +30,32 @@ export function PlanningTable({
 }: PlanningTableProps) {
   const sortedPaychecks = [...paychecks].sort((a, b) => a.date.localeCompare(b.date))
   const [dragOverId, setDragOverId] = useState<string | null>(null)
+  const [justAssigned, setJustAssigned] = useState<Set<string>>(new Set())
+  const flashTimeouts = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
+
+  useEffect(() => {
+    const timeouts = flashTimeouts.current
+    return () => {
+      timeouts.forEach((timeout) => clearTimeout(timeout))
+    }
+  }, [])
+
+  function flashAssigned(key: string) {
+    setJustAssigned((prev) => new Set(prev).add(key))
+    const existing = flashTimeouts.current.get(key)
+    if (existing) clearTimeout(existing)
+    flashTimeouts.current.set(
+      key,
+      setTimeout(() => {
+        setJustAssigned((prev) => {
+          const next = new Set(prev)
+          next.delete(key)
+          return next
+        })
+        flashTimeouts.current.delete(key)
+      }, ASSIGN_FLASH_MS),
+    )
+  }
 
   function moveBill(index: number, direction: -1 | 1) {
     const targetIndex = index + direction
@@ -180,15 +208,23 @@ export function PlanningTable({
                 </td>
                 {sortedPaychecks.map((paycheck) => {
                   const isAssigned = bill.assignedPaycheckId === paycheck.id
+                  const flashKey = `${bill.id}:${paycheck.id}`
+                  const isFlashing = justAssigned.has(flashKey)
                   const toggle = (
                     <button
                       type="button"
-                      onClick={() => onAssignBill(bill.id, isAssigned ? null : paycheck.id)}
+                      onClick={() => {
+                        const nextAssigned = !isAssigned
+                        onAssignBill(bill.id, nextAssigned ? paycheck.id : null)
+                        if (nextAssigned) flashAssigned(flashKey)
+                      }}
                       aria-label={isAssigned ? 'Unassign from this paycheck' : 'Assign to this paycheck'}
                       aria-pressed={isAssigned}
-                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
+                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors duration-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                         isAssigned
-                          ? 'border-[var(--accent)] bg-[var(--accent)]'
+                          ? isFlashing
+                            ? 'border-[var(--accent)] bg-[var(--accent)]'
+                            : 'border-[var(--accent-dim)] bg-[var(--accent-tint)]'
                           : 'border-dashed border-[var(--border)] bg-transparent hover:border-[var(--accent)]'
                       }`}
                     />
