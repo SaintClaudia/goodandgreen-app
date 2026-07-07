@@ -1,9 +1,9 @@
 import type { PaymentStatus } from '../types'
 
 const STATUS_STYLES: Record<PaymentStatus, string> = {
-  planned: 'bg-slate-100 text-slate-600 border-slate-200',
-  paid: 'bg-amber-50 text-amber-700 border-amber-200',
-  cleared: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  planned: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600',
+  paid: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
+  cleared: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800',
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
