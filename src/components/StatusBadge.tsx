@@ -3,7 +3,7 @@ import type { PaymentStatus } from '../types'
 const STATUS_STYLES: Record<PaymentStatus, string> = {
   planned: 'bg-transparent text-[var(--muted)] border-[var(--border)]',
   paid: 'bg-[var(--panel-alt)] text-[var(--text)] border-[var(--border)]',
-  cleared: 'bg-[var(--success-dark)] text-[var(--success)] border-[var(--success-dark)]',
+  cleared: 'bg-[var(--panel-alt)] text-[var(--text)] border-[var(--border)]',
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
@@ -57,7 +57,7 @@ export function StatusChips({ status, onChange }: StatusChipsProps) {
         className={`rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
           status === 'cleared'
             ? STATUS_STYLES.cleared
-            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--success)] hover:text-[var(--success)]'
+            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)]'
         }`}
       >
         Cleared

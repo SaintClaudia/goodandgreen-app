@@ -32,30 +32,28 @@ export function ExpenseList({ fundId, expenses, onAdd, onDelete }: ExpenseListPr
   }
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 text-right">
       <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Spending</div>
       {expenses.length > 0 && (
         <ul className="mt-1 space-y-1">
           {expenses.map((expense) => (
-            <li key={expense.id} className="flex items-center justify-between gap-2 text-xs">
+            <li key={expense.id} className="flex items-center justify-end gap-1.5 text-xs">
               <span className="truncate text-[var(--muted)]">{expense.label}</span>
-              <span className="flex flex-shrink-0 items-center gap-1.5">
-                <span className="font-medium text-[var(--text)]">{formatCurrency(expense.amount)}</span>
-                <button
-                  type="button"
-                  onClick={() => onDelete(expense.id)}
-                  aria-label={`Remove ${expense.label}`}
-                  className="text-[var(--muted)] hover:text-[var(--danger)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
-                >
-                  ×
-                </button>
-              </span>
+              <span className="font-medium text-[var(--text)]">{formatCurrency(expense.amount)}</span>
+              <button
+                type="button"
+                onClick={() => onDelete(expense.id)}
+                aria-label={`Remove ${expense.label}`}
+                className="flex-shrink-0 text-[var(--muted)] hover:text-[var(--danger)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
       )}
       {isAdding ? (
-        <div className="mt-1 flex items-center gap-1">
+        <div className="mt-1 flex items-center justify-end gap-1">
           <input
             autoFocus
             type="text"
