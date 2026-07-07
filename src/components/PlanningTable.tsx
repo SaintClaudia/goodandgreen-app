@@ -224,7 +224,7 @@ export function PlanningTable({
                         isAssigned
                           ? isFlashing
                             ? 'border-[var(--accent)] bg-[var(--accent)]'
-                            : 'border-[var(--accent-dim)] bg-[var(--accent-tint)]'
+                            : 'border-[var(--border)] bg-[var(--neutral-fill)]'
                           : 'border-dashed border-[var(--border)] bg-transparent hover:border-[var(--accent)]'
                       }`}
                     />

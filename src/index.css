@@ -14,6 +14,7 @@
   --accent-solid: #3157bd;
   --accent-tint: #e3eafb;
   --accent-contrast: #ffffff;
+  --neutral-fill: #e2e2df;
   --danger: #c4384a;
   --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
 }
@@ -30,6 +31,7 @@
   --accent-solid: #3a68d0;
   --accent-tint: rgba(82, 139, 255, 0.14);
   --accent-contrast: #ffffff;
+  --neutral-fill: #3a3a3a;
   --danger: #e06c75;
 }
 
