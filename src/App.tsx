@@ -5,6 +5,7 @@ import { generateId } from './utils'
 import { PlanningTable } from './components/PlanningTable'
 import { PaycheckForm } from './components/PaycheckForm'
 import { BillForm, type BillDraft } from './components/BillForm'
+import { BillStatusModal, type BillStatusUpdate } from './components/BillStatusModal'
 
 type PaycheckModalState = { mode: 'add' } | { mode: 'edit'; paycheck: Paycheck } | null
 type BillModalState = { mode: 'add' } | { mode: 'edit'; bill: Bill } | null
@@ -12,8 +13,10 @@ type BillModalState = { mode: 'add' } | { mode: 'edit'; bill: Bill } | null
 function App() {
   const [paychecks, setPaychecks] = useLocalStorage<Paycheck[]>('paychecks', [])
   const [bills, setBills] = useLocalStorage<Bill[]>('bills', [])
+  const [customChipOptions, setCustomChipOptions] = useLocalStorage<string[]>('customChipOptions', [])
   const [paycheckModal, setPaycheckModal] = useState<PaycheckModalState>(null)
   const [billModal, setBillModal] = useState<BillModalState>(null)
+  const [statusModalBill, setStatusModalBill] = useState<Bill | null>(null)
 
   function handleSavePaycheck(draft: Pick<Paycheck, 'date' | 'amount'>) {
     if (paycheckModal?.mode === 'edit') {
@@ -44,6 +47,7 @@ function App() {
         {
           id: generateId(),
           assignedPaycheckId: null,
+          customChips: [],
           ...draft,
         },
       ])
@@ -61,6 +65,16 @@ function App() {
     setBills((prev) =>
       prev.map((b) => (b.id === billId ? { ...b, assignedPaycheckId: paycheckId } : b)),
     )
+  }
+
+  function handleCreateCustomChip(label: string) {
+    setCustomChipOptions((prev) =>
+      prev.some((opt) => opt.toLowerCase() === label.toLowerCase()) ? prev : [...prev, label],
+    )
+  }
+
+  function handleSaveBillStatus(billId: string, update: BillStatusUpdate) {
+    setBills((prev) => prev.map((b) => (b.id === billId ? { ...b, ...update } : b)))
   }
 
   function handleReorderBills(draggedId: string, targetId: string) {
@@ -90,6 +104,7 @@ function App() {
           paychecks={paychecks}
           onAssignBill={handleAssignBill}
           onEditBill={(bill) => setBillModal({ mode: 'edit', bill })}
+          onOpenBillStatus={(bill) => setStatusModalBill(bill)}
           onEditPaycheck={(paycheck) => setPaycheckModal({ mode: 'edit', paycheck })}
           onAddPaycheck={() => setPaycheckModal({ mode: 'add' })}
           onAddBill={() => setBillModal({ mode: 'add' })}
@@ -112,6 +127,16 @@ function App() {
           onSave={handleSaveBill}
           onClose={() => setBillModal(null)}
           onDelete={billModal.mode === 'edit' ? handleDeleteBill : undefined}
+        />
+      )}
+
+      {statusModalBill && (
+        <BillStatusModal
+          bill={statusModalBill}
+          customChipOptions={customChipOptions}
+          onCreateCustomChip={handleCreateCustomChip}
+          onSave={handleSaveBillStatus}
+          onClose={() => setStatusModalBill(null)}
         />
       )}
     </div>

@@ -10,6 +10,7 @@ interface PlanningTableProps {
   paychecks: Paycheck[]
   onAssignBill: (billId: string, paycheckId: string | null) => void
   onEditBill: (bill: Bill) => void
+  onOpenBillStatus: (bill: Bill) => void
   onEditPaycheck: (paycheck: Paycheck) => void
   onAddPaycheck: () => void
   onAddBill: () => void
@@ -21,6 +22,7 @@ export function PlanningTable({
   paychecks,
   onAssignBill,
   onEditBill,
+  onOpenBillStatus,
   onEditPaycheck,
   onAddPaycheck,
   onAddBill,
@@ -263,7 +265,7 @@ export function PlanningTable({
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                onEditBill(bill)
+                                onOpenBillStatus(bill)
                               }}
                               className={`font-semibold hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
                                 isFlashing ? 'text-white' : 'text-[var(--text)] hover:text-[var(--accent)]'
