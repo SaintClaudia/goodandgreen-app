@@ -164,16 +164,23 @@ export function PlanningTable({
                 </td>
                 {sortedPaychecks.map((paycheck) => {
                   const isAssigned = bill.assignedPaycheckId === paycheck.id
+                  const toggle = (
+                    <button
+                      type="button"
+                      onClick={() => onAssignBill(bill.id, isAssigned ? null : paycheck.id)}
+                      aria-label={isAssigned ? 'Unassign from this paycheck' : 'Assign to this paycheck'}
+                      aria-pressed={isAssigned}
+                      className={`h-4 w-4 flex-shrink-0 rounded border transition-colors ${
+                        isAssigned
+                          ? 'border-[var(--accent)] bg-[var(--accent)]'
+                          : 'border-dashed border-[var(--border)] bg-transparent hover:border-[var(--accent)]'
+                      }`}
+                    />
+                  )
                   return (
                     <td key={paycheck.id} className="px-3 py-3 align-top">
-                      <div className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          checked={isAssigned}
-                          onChange={(e) => onAssignBill(bill.id, e.target.checked ? paycheck.id : null)}
-                          className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer rounded border-[var(--border)] bg-[var(--bg)] text-[var(--accent)] focus:ring-[var(--accent)]"
-                        />
-                        {isAssigned ? (
+                      {isAssigned ? (
+                        <div className="flex items-start justify-between gap-2">
                           <div className={`space-y-1.5 ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
                             <div className="font-semibold text-[var(--text)]">{formatCurrency(bill.amount)}</div>
                             <StatusSelect
@@ -181,10 +188,11 @@ export function PlanningTable({
                               onChange={(status) => onStatusChange(bill.id, status)}
                             />
                           </div>
-                        ) : (
-                          <span className="mt-0.5 text-xs text-[var(--muted)]">assign</span>
-                        )}
-                      </div>
+                          {toggle}
+                        </div>
+                      ) : (
+                        <div className="flex justify-end">{toggle}</div>
+                      )}
                     </td>
                   )
                 })}
