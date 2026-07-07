@@ -223,8 +223,8 @@ export function PlanningTable({
                     >
                       ⠿
                     </button>
-                    <div className={`min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
-                      <div className="flex items-baseline justify-between gap-2">
+                    <div className={`@container min-w-0 flex-1 self-start ${bill.status === 'cleared' ? 'opacity-60' : ''}`}>
+                      <div className="flex flex-col items-start gap-0.5 @[220px]:flex-row @[220px]:items-baseline @[220px]:justify-between @[220px]:gap-2">
                         <button
                           type="button"
                           onClick={() => onEditBill(bill)}
@@ -238,17 +238,15 @@ export function PlanningTable({
                           </span>
                         )}
                       </div>
-                      <div className="mt-1 flex items-baseline justify-between gap-2">
-                        <span className="text-xs text-[var(--muted)]">
-                          {bill.remainingBalance != null && (
-                            <>
-                              Balance owed:{' '}
-                              <span className="font-medium text-[var(--text)]">
-                                {formatCurrency(bill.remainingBalance)}
-                              </span>
-                            </>
-                          )}
-                        </span>
+                      <div className="mt-1 flex flex-col items-start gap-0.5 @[260px]:flex-row @[260px]:items-baseline @[260px]:justify-between @[260px]:gap-2">
+                        {bill.remainingBalance != null && (
+                          <span className="text-xs text-[var(--muted)]">
+                            Balance owed:{' '}
+                            <span className="font-medium text-[var(--text)]">
+                              {formatCurrency(bill.remainingBalance)}
+                            </span>
+                          </span>
+                        )}
                         <span className="flex-shrink-0 text-xs text-[var(--muted)]">
                           Due {formatDate(bill.dueDate)}
                           {bill.plannedPaymentDate && (
@@ -340,7 +338,7 @@ export function PlanningTable({
                 const fundExpenses = expenses.filter((e) => e.fundId === fund.id)
                 return (
                   <td key={fund.id} className="px-3 py-3 align-top text-xs text-[var(--muted)]">
-                    <div>
+                    <div className="text-right">
                       <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Remaining</div>
                       <div
                         className={`text-[18px] font-semibold ${
@@ -357,7 +355,7 @@ export function PlanningTable({
                       onDelete={onDeleteExpense}
                     />
                     <details className="group mt-2">
-                      <summary className="flex cursor-pointer list-none items-center gap-1 text-[11px] text-[var(--muted)] hover:text-[var(--accent)] [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-center justify-end gap-1 text-[11px] text-[var(--muted)] hover:text-[var(--accent)] [&::-webkit-details-marker]:hidden">
                         <svg
                           viewBox="0 0 20 20"
                           fill="currentColor"

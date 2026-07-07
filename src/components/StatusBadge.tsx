@@ -2,8 +2,8 @@ import type { PaymentStatus } from '../types'
 
 const STATUS_STYLES: Record<PaymentStatus, string> = {
   planned: 'bg-transparent text-[var(--muted)] border-[var(--border)]',
-  paid: 'bg-[var(--accent-tint)] text-[var(--accent)] border-[var(--accent-dim)]',
-  cleared: 'bg-[var(--accent-solid)] text-[var(--accent-contrast)] border-[var(--accent-solid)]',
+  paid: 'bg-[var(--panel-alt)] text-[var(--text)] border-[var(--border)]',
+  cleared: 'bg-[var(--success-tint)] text-[var(--success)] border-[var(--success)]',
 }
 
 const STATUS_LABELS: Record<PaymentStatus, string> = {
@@ -45,7 +45,7 @@ export function StatusChips({ status, onChange }: StatusChipsProps) {
         className={`rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
           status === 'paid'
             ? STATUS_STYLES.paid
-            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--text)] hover:text-[var(--text)]'
         }`}
       >
         Paid
@@ -57,7 +57,7 @@ export function StatusChips({ status, onChange }: StatusChipsProps) {
         className={`rounded-full border px-3 py-1 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] ${
           status === 'cleared'
             ? STATUS_STYLES.cleared
-            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)] hover:text-[var(--accent)]'
+            : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--success)] hover:text-[var(--success)]'
         }`}
       >
         Cleared
