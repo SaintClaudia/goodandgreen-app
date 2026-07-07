@@ -290,49 +290,64 @@ export function PlanningTable({
               </td>
               {sortedFunds.map((fund) => {
                 const summary = summarizeFund(fund, bills)
-                const isNegative = summary.remainingCleared < 0 || summary.remainingPlanned < 0
                 return (
                   <td key={fund.id} className="px-3 py-3 align-top text-xs text-[var(--muted)]">
-                    <dl className="space-y-1">
-                      <div className="flex justify-between gap-2">
-                        <dt>Funds</dt>
-                        <dd className="font-medium text-[var(--text)]">
-                          {formatCurrency(summary.fundAmount)}
-                        </dd>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Remaining</div>
+                      <div
+                        className={`text-[18px] font-semibold ${
+                          summary.remainingPlanned < 0 ? 'text-[var(--danger)]' : 'text-[var(--text)]'
+                        }`}
+                      >
+                        {formatCurrency(summary.remainingPlanned)}
                       </div>
-                      <div className="flex justify-between gap-2">
-                        <dt>Planned bills</dt>
-                        <dd className="font-medium text-[var(--text)]">
-                          −{formatCurrency(summary.plannedTotal)}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <dt>Paid / cleared</dt>
-                        <dd className="font-medium text-[var(--accent)]">
-                          {formatCurrency(summary.paidOrClearedTotal)}
-                        </dd>
-                      </div>
-                      <div className="mt-1 flex justify-between gap-2 border-t border-[var(--border)] pt-1">
-                        <dt className="font-medium text-[var(--muted)]">Remaining (planned)</dt>
-                        <dd
-                          className={`font-semibold ${
-                            isNegative ? 'text-[var(--danger)]' : 'text-[var(--text)]'
-                          }`}
+                    </div>
+                    <details className="group mt-2">
+                      <summary className="flex cursor-pointer list-none items-center gap-1 text-[11px] text-[var(--muted)] hover:text-[var(--accent)] [&::-webkit-details-marker]:hidden">
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-3 w-3 flex-shrink-0 transition-transform group-open:rotate-90"
                         >
-                          {formatCurrency(summary.remainingPlanned)}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <dt className="font-medium text-[var(--muted)]">Remaining (cleared)</dt>
-                        <dd
-                          className={`font-semibold ${
-                            isNegative ? 'text-[var(--danger)]' : 'text-[var(--accent)]'
-                          }`}
-                        >
-                          {formatCurrency(summary.remainingCleared)}
-                        </dd>
-                      </div>
-                    </dl>
+                          <path
+                            fillRule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Details
+                      </summary>
+                      <dl className="mt-1.5 space-y-1">
+                        <div className="flex justify-between gap-2">
+                          <dt>Funds</dt>
+                          <dd className="font-medium text-[var(--text)]">
+                            {formatCurrency(summary.fundAmount)}
+                          </dd>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <dt>Planned bills</dt>
+                          <dd className="font-medium text-[var(--text)]">
+                            −{formatCurrency(summary.plannedTotal)}
+                          </dd>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <dt>Paid / cleared</dt>
+                          <dd className="font-medium text-[var(--accent)]">
+                            {formatCurrency(summary.paidOrClearedTotal)}
+                          </dd>
+                        </div>
+                        <div className="flex justify-between gap-2 border-t border-[var(--border)] pt-1">
+                          <dt className="font-medium text-[var(--muted)]">Remaining (cleared)</dt>
+                          <dd
+                            className={`font-semibold ${
+                              summary.remainingCleared < 0 ? 'text-[var(--danger)]' : 'text-[var(--accent)]'
+                            }`}
+                          >
+                            {formatCurrency(summary.remainingCleared)}
+                          </dd>
+                        </div>
+                      </dl>
+                    </details>
                   </td>
                 )
               })}

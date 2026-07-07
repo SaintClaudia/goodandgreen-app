@@ -72,10 +72,8 @@ export function BillStatusModal({
 
         <div>
           <span className="block text-[11px] uppercase tracking-wider text-[var(--muted)]">Status</span>
-          <div className="mt-1.5">
-            <StatusChips status={status} onChange={setStatus} />
-          </div>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <StatusChips status={status} onChange={setStatus} />
             {customChipOptions.map((option) => {
               const active = customChips.includes(option)
               return (
